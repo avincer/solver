@@ -1,5 +1,3 @@
-#include <cmath>
-
 #include "result.h"
 
 class MathStack
@@ -10,222 +8,68 @@ class MathStack
 		float* stack;
 	
 	public:
-		MathStack(int maxSize)
-		{
-			this->maxSize = maxSize;
-			stack = new float[maxSize];
-			pos = 0;
-		}
+		MathStack(int maxSize);
 		
 		// for the VM //
-		void reset()
-		{
-			// if everything works as it's supposed to there is no need to 
-			// reset whatever data may still be in the stack
-			pos = 0;
-		}
+		void reset();
 		
-		void reset(float seed)
-		{
-			stack[0] = seed;
-			pos = 1;
-		}
+		void reset(float seed);
 		
-		Result peek(float* x)
-		{
-			if(pos < 1) return StackUnderflow;
-			*x = stack[pos - 1];
-			return Ok;
-		}
+		void dump(const char* prefix);
 		
-		Result pop(float* x)
-		{
-			if(pos < 1) return StackUnderflow;
-			*x = stack[pos - 1];
-			--pos;
-			return Ok;
-		}
+		Result peek(float* x);
+		
+		Result pop(float* x);
 		
 		// stack functions //
-		Result push(float x)
-		{
-			if(pos >= maxSize) return StackOverflow;
-			stack[pos] = x;
-			++pos;
-			return Ok;
-		}
+		Result push(float x);
 		
-		Result dup()
-		{
-			if(pos < 1) return StackUnderflow;
-			if(pos >= maxSize) return StackOverflow;
-			stack[pos] = stack[pos - 1];
-			++pos;
-			return Ok;
-		}
+		Result dup();
 		
-		Result swap()
-		{
-			if(pos < 2) return StackUnderflow;
-			float x = stack[pos - 2];
-			stack[pos - 2] = stack[pos - 1];
-			stack[pos - 1] = x;
-			return Ok;
-		}
+		Result swap();
 		
-		Result drop()
-		{
-			if(pos < 1) return StackUnderflow;
-			--pos;
-			return Ok;
-		}
+		Result drop();
 		
 		// unary math //
-		Result neg()
-		{
-			if(pos < 1) return StackUnderflow;
-			stack[pos - 1] = -stack[pos - 1];
-			return Ok;
-		}
+		Result neg();
 		
-		Result inc()
-		{
-			if(pos < 1) return StackUnderflow;
-			++stack[pos - 1];
-			return Ok;
-		}
+		Result inc();
 		
-		Result dec()
-		{
-			if(pos < 1) return StackUnderflow;
-			--stack[pos - 1];
-			return Ok;
-		}
+		Result dec();
 		
-		Result trunc()
-		{
-			if(pos < 1) return StackUnderflow;
-			stack[pos - 1] = (int)stack[pos - 1];
-			return Ok;
-		}
+		Result trunc();
 		
 		// unary logic //
-		Result lnot()
-		{
-			if(pos < 1) return StackUnderflow;
-			stack[pos - 1] = !stack[pos - 1];
-			return Ok;
-		}
+		Result lnot();
 		
 		// binary math //
-		Result add()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] += stack[pos - 1];
-			--pos;
-			return Ok;
-		}
+		Result add();
 		
-		Result sub()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] -= stack[pos - 1];
-			--pos;
-			return Ok;
-		}
+		Result sub();
 		
-		Result mul()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] *= stack[pos - 1];
-			--pos;
-			return Ok;
-		}
+		Result mul();
 		
-		Result div()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] += stack[pos - 1];
-			--pos;
-			return Ok;
-		}
+		Result div();
 		
-		Result fmod()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] = ::fmod(stack[pos - 2], stack[pos - 1]);
-			--pos;
-			return Ok;
-		}
+		Result fmod();
 		
 		// binary logic
-		Result land()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] = stack[pos - 2] && stack[pos - 1];
-			--pos;
-			return Ok;
-		}
+		Result land();
 		
-		Result lor()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] = stack[pos - 2] || stack[pos - 1];
-			--pos;
-			return Ok;
-		}
+		Result lor();
 		
 		// comparison
-		Result eq()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] = stack[pos - 2] == stack[pos - 1];
-			--pos;
-			return Ok;
-		}
+		Result eq();
 		
-		Result neq()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] = stack[pos - 2] != stack[pos - 1];
-			--pos;
-			return Ok;
-		}
+		Result neq();
 		
-		Result gt()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] = stack[pos - 2] > stack[pos - 1];
-			--pos;
-			return Ok;
-		}
+		Result gt();
 		
-		Result lt()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] = stack[pos - 2] < stack[pos - 1];
-			--pos;
-			return Ok;
-		}
+		Result lt();
 		
-		Result gte()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] = stack[pos - 2] >= stack[pos - 1];
-			--pos;
-			return Ok;
-		}
+		Result gte();
 		
-		Result lte()
-		{
-			if(pos < 2) return StackUnderflow;
-			stack[pos - 2] = stack[pos - 2] <= stack[pos - 1];
-			--pos;
-			return Ok;
-		}		
+		Result lte();
 		
-		~MathStack()
-		{
-			delete stack;
-		}
+		~MathStack();
 };

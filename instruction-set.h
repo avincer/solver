@@ -60,3 +60,5 @@ typedef enum
 	InstructionCount // must be last!
 }
 Instruction;
+
+const char* translateInstruction(Instruction instruction);

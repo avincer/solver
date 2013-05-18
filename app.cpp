@@ -6,6 +6,8 @@
 
 int main()
 {
+	Instruction noOutput[] = { drop };
+	
 	Instruction fib[] = 
 	{
 		// if seed value >= 2 jump forward
@@ -21,11 +23,12 @@ int main()
 		dup, push1, put // store it
 	};
 	
-	int stackSize = 16;
-	int memorySize = 16;
+	int stackSize = 16, memorySize = 16, maxOps = 100;
+	auto debugMode = (DebugMode)(DumpStackOnEntry | DumpStackAfterEachInstruction | DumpStackOnExit);
 	
 	VM vm(stackSize, memorySize);
-	vm.loadProgram(fib, len(fib), 100);
+	vm.loadProgram(fib, len(fib));
+	//vm.setDebugMode(debugMode);
 	
 	int i = 0;
 	Result result;
@@ -33,22 +36,15 @@ int main()
 
 	do
 	{
-		std::cout << i << "\t" ;
-		result = vm.run(i, &output);
+		result = vm.run(i, &output, maxOps);
 		
 		switch(result)
 		{
 			case Ok:
-				std::cout << output << std::endl;
+				std::cout << i << ":\t" << output << std::endl;
 				break;
-			case StackUnderflow:
-				std::cout << "stack underflow" << std::endl;
-				break;
-			case StackOverflow:
-				std::cout << "stack overflow" << std::endl;
-				break;
-			case ExceededMaxOpCount:
-				std::cout << "exceeded max op count" << std::endl;
+			default:
+				std::cout << i << ":\t" << translateResult(result) << std::endl;
 				break;
 		}
 		++i;

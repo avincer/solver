@@ -1,6 +1,15 @@
 #include "instruction-set.h"
 #include "math-stack.h"
 
+typedef enum
+{
+	None = 0,
+	DumpStackOnEntry = 1,
+	DumpStackOnExit = 2,
+	DumpStackAfterEachInstruction = 4
+}
+DebugMode;
+
 class VM
 {
 	private:
@@ -10,19 +19,23 @@ class VM
 		int memorySize;
 		
 		// array of InstructionCount function pointers all set to null
+		// function pointers point to instruction methods on MathStack
 		Result (MathStack::*handlers[InstructionCount])() = { nullptr };
 		
 		Instruction* program;
 		int programLen;
-		int maxOps;
+		
+		// debug options
+		DebugMode debugMode;
 		
 	public:
 		VM(int stackSize, int memorySize);
 		
-		void loadProgram(Instruction* program, int programLen, int maxOps);
+		void setDebugMode(DebugMode flags);
 		
-		// todo - return reason for failure
-		Result run(float seed, float* output);
+		void loadProgram(Instruction* program, int programLen);
+		
+		Result run(float seed, float* output, int maxOps);
 		
 		~VM();
 };

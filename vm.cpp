@@ -1,4 +1,5 @@
 #include <cstring>
+#include <iostream>
 
 #include "vm.h"
 
@@ -38,18 +39,21 @@ VM::VM(int stackSize, int memorySize) : stack(stackSize)
 	handlers[lte] = &MathStack::lte;
 }
 
-void VM::loadProgram(Instruction* program, int programLen, int maxOps)
+void VM::setDebugMode(DebugMode flags)
+{
+	debugMode = flags;
+}
+
+void VM::loadProgram(Instruction* program, int programLen)
 {
 	this->program = program;
 	this->programLen = programLen;
-	this->maxOps = maxOps;
 	
 	// memory is only reset on load
 	memset(memory, 0, memorySize * sizeof(float));
 }
 
-// todo - return reason for failure
-Result VM::run(float seed, float* output)
+Result VM::run(float seed, float* output, int maxOps)
 {
 	if(!program) throw "No program loaded!";
 	
@@ -60,6 +64,8 @@ Result VM::run(float seed, float* output)
 	
 	// stack is reset at the start of each run
 	stack.reset(seed);
+	
+	if(debugMode & DumpStackOnEntry) stack.dump("(entry)");
 	
 	do
 	{
@@ -75,7 +81,7 @@ Result VM::run(float seed, float* output)
 			{
 				case jif:
 					result = stack.pop(&target) && stack.pop(&condition) ? Ok : StackUnderflow;
-					if(result && condition) pos += (int)target;
+					if(result) pos += condition ? (int)target : 1;
 					break;
 				case jmp:
 					result = stack.pop(&target);
@@ -105,7 +111,6 @@ Result VM::run(float seed, float* output)
 						}
 					}
 					break;
-					
 				
 				default:
 					auto handler = handlers[instruction];
@@ -115,19 +120,35 @@ Result VM::run(float seed, float* output)
 					}
 					else
 					{
-						throw "Something went wrong - unknown instruction!";
+						throw "Unknown instruction!";
 					}
 			}
 			if(instruction != jif && instruction != jmp) ++pos;
 		}
+		
+		if(debugMode & DumpStackAfterEachInstruction)
+		{
+			if(result)
+			{
+				stack.dump(translateInstruction(instruction));
+			}
+			else
+			{
+				std::cout << translateInstruction(instruction) << "\t" << translateResult(result) << std::endl;
+			}				
+		}
+		
 		++opCount;
 	}
 	while(result && pos >= 0 && pos < programLen && opCount < maxOps);
+
+	if(debugMode & DumpStackOnExit) stack.dump("(exit)");
 	
 	if(result && opCount < maxOps)
 	{
 		// program terminated normally - try and get result
-		return stack.peek(output);
+		// peek instruction not part of program so return different error
+		return stack.peek(output) == Ok ? Ok : NoOutput;
 	}
 	
 	// failed
