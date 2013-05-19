@@ -6,6 +6,14 @@
 
 int main()
 {
+	std::cout << "-1 is " << (-1 ? "true" : "false") << std::endl;
+	std::cout << "0 is " << (0 ? "true" : "false") << std::endl;
+	std::cout << "1 is " << (1 ? "true" : "false") << std::endl;
+	std::cout << "3.5 is " << (3.5 ? "true" : "false") << std::endl;
+	std::cout << "0.0 is " << (0.0 ? "true" : "false") << std::endl;
+	std::cout << "-4.12 is " << (-4.12 ? "true" : "false") << std::endl;
+	return 0;
+	
 	Instruction noOutput[] = { drop };
 	
 	Instruction fib[] = 
@@ -23,12 +31,17 @@ int main()
 		dup, push1, put // store it
 	};
 	
+	Instruction lin[] =
+	{
+		mul, push1, add
+	};
+	
 	int stackSize = 16, memorySize = 16, maxOps = 100;
 	auto debugMode = (DebugMode)(DumpStackOnEntry | DumpStackAfterEachInstruction | DumpStackOnExit);
 	
 	VM vm(stackSize, memorySize);
-	vm.loadProgram(fib, len(fib));
-	//vm.setDebugMode(debugMode);
+	vm.loadProgram(lin, len(lin));
+	vm.setDebugMode(debugMode);
 	
 	int i = 0;
 	Result result;
@@ -37,6 +50,7 @@ int main()
 	do
 	{
 		result = vm.run(i, &output, maxOps);
+		if(debugMode) std::cout << std::endl;
 		
 		switch(result)
 		{
@@ -47,6 +61,9 @@ int main()
 				std::cout << i << ":\t" << translateResult(result) << std::endl;
 				break;
 		}
+		
+		if(debugMode) std::cout << std::endl << std::endl;
+		
 		++i;
 	}
 	while(i <= 10);

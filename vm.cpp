@@ -123,7 +123,7 @@ Result VM::run(float seed, float* output, int maxOps)
 						throw "Unknown instruction!";
 					}
 			}
-			if(instruction != jif && instruction != jmp) ++pos;
+			if(instruction != jif && instruction != jmp && instruction != ret) ++pos;
 		}
 		
 		if(debugMode & DumpStackAfterEachInstruction)
