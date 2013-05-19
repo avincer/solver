@@ -80,12 +80,19 @@ Result VM::run(float seed, float* output, int maxOps)
 			switch(instruction)
 			{
 				case jif:
-					result = stack.pop(&target) && stack.pop(&condition) ? Ok : StackUnderflow;
-					if(result) pos += condition ? (int)target : 1;
+					result = stack.pop(&target);
+					if(result == Ok)
+					{
+						result = stack.pop(&condition);
+						if(result == Ok)
+						{
+							pos += condition ? (int)target : 1;
+						}
+					}
 					break;
 				case jmp:
 					result = stack.pop(&target);
-					if(result) pos += (int)target;
+					if(result == Ok) pos += (int)target;
 					break;
 				case ret:
 					pos = -1;
@@ -94,7 +101,7 @@ Result VM::run(float seed, float* output, int maxOps)
 				case get:
 				case put:
 					result = stack.pop(&target);
-					if(result)
+					if(result == Ok)
 					{
 						int addr = (int)target;
 						// wrap to [0, memorySize) (don't forget negative numbers!)
@@ -107,7 +114,7 @@ Result VM::run(float seed, float* output, int maxOps)
 						else
 						{
 							result = stack.pop(&target);
-							if(result) memory[addr] = target;
+							if(result == Ok) memory[addr] = target;
 						}
 					}
 					break;
@@ -128,7 +135,7 @@ Result VM::run(float seed, float* output, int maxOps)
 		
 		if(debugMode & DumpStackAfterEachInstruction)
 		{
-			if(result)
+			if(result == Ok)
 			{
 				stack.dump(translateInstruction(instruction));
 			}
@@ -140,11 +147,11 @@ Result VM::run(float seed, float* output, int maxOps)
 		
 		++opCount;
 	}
-	while(result && pos >= 0 && pos < programLen && opCount < maxOps);
+	while(result == Ok && pos >= 0 && pos < programLen && opCount < maxOps);
 
 	if(debugMode & DumpStackOnExit) stack.dump("(exit)");
 	
-	if(result && opCount < maxOps)
+	if(result == Ok && opCount < maxOps)
 	{
 		// program terminated normally - try and get result
 		// peek instruction not part of program so return different error
@@ -152,7 +159,7 @@ Result VM::run(float seed, float* output, int maxOps)
 	}
 	
 	// failed
-	return result ? ExceededMaxOpCount : result;
+	return result == Ok ? ExceededMaxOpCount : result;
 }
 
 VM::~VM()

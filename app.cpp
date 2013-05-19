@@ -6,14 +6,6 @@
 
 int main()
 {
-	std::cout << "-1 is " << (-1 ? "true" : "false") << std::endl;
-	std::cout << "0 is " << (0 ? "true" : "false") << std::endl;
-	std::cout << "1 is " << (1 ? "true" : "false") << std::endl;
-	std::cout << "3.5 is " << (3.5 ? "true" : "false") << std::endl;
-	std::cout << "0.0 is " << (0.0 ? "true" : "false") << std::endl;
-	std::cout << "-4.12 is " << (-4.12 ? "true" : "false") << std::endl;
-	return 0;
-	
 	Instruction noOutput[] = { drop };
 	
 	Instruction fib[] = 
@@ -33,14 +25,14 @@ int main()
 	
 	Instruction lin[] =
 	{
-		mul, push1, add
+		push3, mul, push1, add
 	};
 	
 	int stackSize = 16, memorySize = 16, maxOps = 100;
 	auto debugMode = (DebugMode)(DumpStackOnEntry | DumpStackAfterEachInstruction | DumpStackOnExit);
 	
 	VM vm(stackSize, memorySize);
-	vm.loadProgram(lin, len(lin));
+	vm.loadProgram(noOutput, len(noOutput));
 	vm.setDebugMode(debugMode);
 	
 	int i = 0;

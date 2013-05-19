@@ -117,7 +117,7 @@ Result MathStack::trunc()
 Result MathStack::lnot()
 {
 	if(pos < 1) return StackUnderflow;
-	stack[pos - 1] = !stack[pos - 1];
+	stack[pos - 1] = stack[pos - 1] <= 0;
 	return Ok;
 }
 
@@ -166,7 +166,7 @@ Result MathStack::fmod()
 Result MathStack::land()
 {
 	if(pos < 2) return StackUnderflow;
-	stack[pos - 2] = stack[pos - 2] && stack[pos - 1];
+	stack[pos - 2] = stack[pos - 2] > 0 && stack[pos - 1] > 0;
 	--pos;
 	return Ok;
 }
@@ -174,7 +174,7 @@ Result MathStack::land()
 Result MathStack::lor()
 {
 	if(pos < 2) return StackUnderflow;
-	stack[pos - 2] = stack[pos - 2] || stack[pos - 1];
+	stack[pos - 2] = stack[pos - 2] > 0 || stack[pos - 1] > 0;
 	--pos;
 	return Ok;
 }
