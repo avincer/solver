@@ -3,9 +3,12 @@
 
 #include "pile-up.h"
 
-typedef bool (PileUp::*Handler)();
+namespace PileUp
+{
 
-PileUp::PileUp(int stackSize, int memorySize) : stack(stackSize)
+typedef bool (VM::*Handler)();
+
+VM::VM(int stackSize, int memorySize) : stack(stackSize)
 {
 	memory = new float[memorySize];
 	this->memorySize = memorySize;
@@ -41,17 +44,17 @@ PileUp::PileUp(int stackSize, int memorySize) : stack(stackSize)
 	handlers[lte] = &MathStack::lte;
 }
 
-void PileUp::setDebugMode(DebugMode flags)
+void VM::setDebugMode(DebugMode flags)
 {
 	debugMode = flags;
 }
 
-int PileUp::getInstructionCount()
+int VM::getInstructionCount()
 {
 	return InstructionCount;
 }
 
-void PileUp::loadProgram(const std::vector<int>& program)
+void VM::loadProgram(const std::vector<int>& program)
 {
 	this->program = program;
 	
@@ -59,7 +62,7 @@ void PileUp::loadProgram(const std::vector<int>& program)
 	memset(memory, 0, memorySize * sizeof(float));
 }
 
-bool PileUp::run(float seed, float* output, int maxOps)
+bool VM::run(float seed, float* output, int maxOps)
 {
 	if(!program.size()) throw "No program loaded!";
 	
@@ -172,12 +175,110 @@ bool PileUp::run(float seed, float* output, int maxOps)
 	return result == Ok;
 }
 
-std::string PileUp::getLastError()
+std::string VM::getLastError()
 {
 	return translateResult(result);
 }
 
-PileUp::~PileUp()
+VM::~VM()
 {
 	delete memory;
+}
+
+const char* VM::translateInstruction(Instruction instruction)
+{
+	switch(instruction)
+	{
+		case pushNeg1:
+			return "pushNeg1";
+		case push0:
+			return "push0";
+		case push1:
+			return "push1";
+		case push2:
+			return "push2";
+		case push3:
+			return "push3";
+		case push4:
+			return "push4";
+		case push5:
+			return "push5";
+		case push6:
+			return "push6";
+		case push7:
+			return "push7";
+		case push8:
+			return "push8";
+		case push9:
+			return "push9";
+		case push10:
+			return "push10";
+			
+		case dup:
+			return "dup";
+		case swap:
+			return "swap";
+		case drop:
+			return "drop";
+			
+		case neg:
+			return "neg";
+		case inc:
+			return "inc";
+		case dec:
+			return "dec";
+		case truncate:
+			return "truncate";
+			
+		case lnot:
+			return "lnot";
+			
+		case add:
+			return "add";
+		case sub:
+			return "sub";
+		case mul:
+			return "mul";
+		case divide:
+			return "divide";
+		case fmodulus:
+			return "fmodulus";
+			
+		case land:
+			return "land";
+		case lor:
+			return "lor";
+			
+		case eq:
+			return "eq";
+		case neq:
+			return "neq";
+		case gt:
+			return "gt";
+		case lt:
+			return "lt";
+		case gte:
+			return "gte";
+		case lte:
+			return "lte";
+			
+		case jif:
+			return "jif";
+		case jmp:
+			return "jmp";
+		case ret:
+			return "ret";
+			
+		case get:
+			return "get";
+		case put:
+			return "put";
+			
+		case InstructionCount:
+			throw "Tried to translate InstructionCount!";
+		default:
+			return "???";
+	}
+}
+
 }

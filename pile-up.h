@@ -1,7 +1,10 @@
-#include "instruction-set.h"
 #include "math-stack.h"
 #include "ivm.h"
 
+namespace PileUp
+{
+
+// debug modes
 typedef enum
 {
 	None = 0,
@@ -11,7 +14,71 @@ typedef enum
 }
 DebugMode;
 
-class PileUp : public IVM
+// the instruction set
+typedef enum
+{
+	// push //
+	// note: these must be contiguous and in order!
+	pushNeg1,
+	push0,
+	push1,
+	push2,
+	push3,
+	push4,
+	push5,
+	push6,
+	push7,
+	push8,
+	push9,
+	push10,
+	
+	// stack //
+	dup,
+	swap,
+	drop,
+	
+	// unary math //
+	neg,
+	inc,
+	dec,
+	truncate,
+	
+	// unary logic //
+	lnot,
+	
+	// binary math //
+	add,
+	sub,
+	mul,
+	divide,
+	fmodulus,
+	
+	// binary logic //
+	land,
+	lor,
+	
+	// comparators //
+	eq,
+	neq,
+	gt,
+	lt,
+	gte,
+	lte,
+	
+	// flow control
+	jif,
+	jmp,
+	ret,
+	
+	// memory
+	get,
+	put,
+	
+	InstructionCount // must be last!
+}
+Instruction;
+
+class VM : public IVM
 {
 	private:
 		MathStack stack;
@@ -31,7 +98,7 @@ class PileUp : public IVM
 		Result result;
 		
 	public:
-		PileUp(int stackSize, int memorySize);
+		VM(int stackSize, int memorySize);
 		
 		void setDebugMode(DebugMode flags);
 		
@@ -43,5 +110,10 @@ class PileUp : public IVM
 		
 		std::string getLastError();
 		
-		~PileUp();
+		~VM();
+	
+	private:
+		const char* translateInstruction(Instruction instruction);
 };
+
+}

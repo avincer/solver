@@ -2,6 +2,8 @@
 
 #include "pile-up.h"
 
+using namespace PileUp;
+
 int main()
 {
 	std::vector<int> noOutput { drop };
@@ -23,13 +25,13 @@ int main()
 	
 	std::vector<int> lin
 	{
-		mul, push1, add
+		push3, mul, push1, add
 	};
 	
 	int stackSize = 16, memorySize = 16, maxOps = 100;
 	auto debugMode = None; // (DebugMode)(DumpStackOnEntry | DumpStackAfterEachInstruction | DumpStackOnExit);
 	
-	PileUp vm(stackSize, memorySize);
+	VM vm(stackSize, memorySize);
 	vm.loadProgram(lin);
 	vm.setDebugMode(debugMode);
 	
