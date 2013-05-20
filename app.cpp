@@ -2,13 +2,11 @@
 
 #include "vm.h"
 
-#define len(_x) sizeof(_x) / sizeof(Instruction)
-
 int main()
 {
-	Instruction noOutput[] = { drop };
+	std::vector<int> noOutput { drop };
 	
-	Instruction fib[] = 
+	std::vector<int> fib
 	{
 		// if seed value >= 2 jump forward
 		dup, push2, gte, push4, jif,
@@ -23,35 +21,33 @@ int main()
 		dup, push1, put // store it
 	};
 	
-	Instruction lin[] =
+	std::vector<int> lin
 	{
-		push3, mul, push1, add
+		mul, push1, add
 	};
 	
 	int stackSize = 16, memorySize = 16, maxOps = 100;
-	auto debugMode = (DebugMode)(DumpStackOnEntry | DumpStackAfterEachInstruction | DumpStackOnExit);
+	auto debugMode = None; // (DebugMode)(DumpStackOnEntry | DumpStackAfterEachInstruction | DumpStackOnExit);
 	
 	VM vm(stackSize, memorySize);
-	vm.loadProgram(noOutput, len(noOutput));
+	vm.loadProgram(lin);
 	vm.setDebugMode(debugMode);
 	
 	int i = 0;
-	Result result;
 	float output;
 
 	do
 	{
-		result = vm.run(i, &output, maxOps);
+		bool result = vm.run(i, &output, maxOps);
 		if(debugMode) std::cout << std::endl;
 		
-		switch(result)
+		if(result)
 		{
-			case Ok:
-				std::cout << i << ":\t" << output << std::endl;
-				break;
-			default:
-				std::cout << i << ":\t" << translateResult(result) << std::endl;
-				break;
+			std::cout << i << ":\t" << output << std::endl;
+		}
+		else
+		{
+			std::cout << i << ":\t" << vm.getLastError() << std::endl;
 		}
 		
 		if(debugMode) std::cout << std::endl << std::endl;

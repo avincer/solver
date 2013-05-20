@@ -1,5 +1,6 @@
 #include "instruction-set.h"
 #include "math-stack.h"
+#include "ivm.h"
 
 typedef enum
 {
@@ -10,7 +11,7 @@ typedef enum
 }
 DebugMode;
 
-class VM
+class VM : public IVM
 {
 	private:
 		MathStack stack;
@@ -22,20 +23,25 @@ class VM
 		// function pointers point to instruction methods on MathStack
 		Result (MathStack::*handlers[InstructionCount])() = { nullptr };
 		
-		Instruction* program;
-		int programLen;
+		std::vector<int> program;
 		
 		// debug options
 		DebugMode debugMode;
+		
+		Result result;
 		
 	public:
 		VM(int stackSize, int memorySize);
 		
 		void setDebugMode(DebugMode flags);
 		
-		void loadProgram(Instruction* program, int programLen);
+		int getInstructionCount();
 		
-		Result run(float seed, float* output, int maxOps);
+		void loadProgram(const std::vector<int>& program);
+		
+		bool run(float seed, float* output, int maxOps);
+		
+		std::string getLastError();
 		
 		~VM();
 };

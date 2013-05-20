@@ -10,6 +10,8 @@ VM::VM(int stackSize, int memorySize) : stack(stackSize)
 	memory = new float[memorySize];
 	this->memorySize = memorySize;
 	
+	debugMode = None;
+	
 	// set handlers for instructions
 	handlers[dup] = &MathStack::dup;
 	handlers[swap] = &MathStack::swap;
@@ -44,22 +46,25 @@ void VM::setDebugMode(DebugMode flags)
 	debugMode = flags;
 }
 
-void VM::loadProgram(Instruction* program, int programLen)
+int VM::getInstructionCount()
+{
+	return InstructionCount;
+}
+
+void VM::loadProgram(const std::vector<int>& program)
 {
 	this->program = program;
-	this->programLen = programLen;
 	
 	// memory is only reset on load
 	memset(memory, 0, memorySize * sizeof(float));
 }
 
-Result VM::run(float seed, float* output, int maxOps)
+bool VM::run(float seed, float* output, int maxOps)
 {
-	if(!program) throw "No program loaded!";
+	if(!program.size()) throw "No program loaded!";
 	
 	int pos = 0;
 	int opCount = 0;
-	Result result = Ok;
 	float target, condition;
 	
 	// stack is reset at the start of each run
@@ -67,9 +72,11 @@ Result VM::run(float seed, float* output, int maxOps)
 	
 	if(debugMode & DumpStackOnEntry) stack.dump("(entry)");
 	
+	result = Ok;
+	
 	do
 	{
-		Instruction instruction = program[pos];
+		Instruction instruction = (Instruction)program[pos];
 		if(instruction >= pushNeg1 && instruction <= push10)
 		{
 			result = stack.push(instruction - push0);
@@ -147,7 +154,7 @@ Result VM::run(float seed, float* output, int maxOps)
 		
 		++opCount;
 	}
-	while(result == Ok && pos >= 0 && pos < programLen && opCount < maxOps);
+	while(result == Ok && pos >= 0 && pos < (int)program.size() && opCount < maxOps);
 
 	if(debugMode & DumpStackOnExit) stack.dump("(exit)");
 	
@@ -155,11 +162,19 @@ Result VM::run(float seed, float* output, int maxOps)
 	{
 		// program terminated normally - try and get result
 		// peek instruction not part of program so return different error
-		return stack.peek(output) == Ok ? Ok : NoOutput;
+		if(stack.peek(output) != Ok) result = NoOutput;
 	}
-	
-	// failed
-	return result == Ok ? ExceededMaxOpCount : result;
+	else
+	{
+		// failed
+		if(result == Ok) result = ExceededMaxOpCount;
+	}
+	return result == Ok;
+}
+
+std::string VM::getLastError()
+{
+	return translateResult(result);
 }
 
 VM::~VM()
