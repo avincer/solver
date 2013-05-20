@@ -11,7 +11,7 @@ typedef enum
 }
 DebugMode;
 
-class VM : public IVM
+class PileUp : public IVM
 {
 	private:
 		MathStack stack;
@@ -31,7 +31,7 @@ class VM : public IVM
 		Result result;
 		
 	public:
-		VM(int stackSize, int memorySize);
+		PileUp(int stackSize, int memorySize);
 		
 		void setDebugMode(DebugMode flags);
 		
@@ -43,5 +43,5 @@ class VM : public IVM
 		
 		std::string getLastError();
 		
-		~VM();
+		~PileUp();
 };

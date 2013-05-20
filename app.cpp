@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "vm.h"
+#include "pile-up.h"
 
 int main()
 {
@@ -29,7 +29,7 @@ int main()
 	int stackSize = 16, memorySize = 16, maxOps = 100;
 	auto debugMode = None; // (DebugMode)(DumpStackOnEntry | DumpStackAfterEachInstruction | DumpStackOnExit);
 	
-	VM vm(stackSize, memorySize);
+	PileUp vm(stackSize, memorySize);
 	vm.loadProgram(lin);
 	vm.setDebugMode(debugMode);
 	

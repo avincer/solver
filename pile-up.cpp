@@ -1,11 +1,11 @@
 #include <cstring>
 #include <iostream>
 
-#include "vm.h"
+#include "pile-up.h"
 
-typedef bool (VM::*Handler)();
+typedef bool (PileUp::*Handler)();
 
-VM::VM(int stackSize, int memorySize) : stack(stackSize)
+PileUp::PileUp(int stackSize, int memorySize) : stack(stackSize)
 {
 	memory = new float[memorySize];
 	this->memorySize = memorySize;
@@ -41,17 +41,17 @@ VM::VM(int stackSize, int memorySize) : stack(stackSize)
 	handlers[lte] = &MathStack::lte;
 }
 
-void VM::setDebugMode(DebugMode flags)
+void PileUp::setDebugMode(DebugMode flags)
 {
 	debugMode = flags;
 }
 
-int VM::getInstructionCount()
+int PileUp::getInstructionCount()
 {
 	return InstructionCount;
 }
 
-void VM::loadProgram(const std::vector<int>& program)
+void PileUp::loadProgram(const std::vector<int>& program)
 {
 	this->program = program;
 	
@@ -59,7 +59,7 @@ void VM::loadProgram(const std::vector<int>& program)
 	memset(memory, 0, memorySize * sizeof(float));
 }
 
-bool VM::run(float seed, float* output, int maxOps)
+bool PileUp::run(float seed, float* output, int maxOps)
 {
 	if(!program.size()) throw "No program loaded!";
 	
@@ -172,12 +172,12 @@ bool VM::run(float seed, float* output, int maxOps)
 	return result == Ok;
 }
 
-std::string VM::getLastError()
+std::string PileUp::getLastError()
 {
 	return translateResult(result);
 }
 
-VM::~VM()
+PileUp::~PileUp()
 {
 	delete memory;
 }

@@ -1,2 +1,2 @@
 #!/bin/bash
-g++ -g -std=c++11 -Wall app.cpp vm.cpp math-stack.cpp result.cpp instruction-set.cpp -o run/app
+g++ -g -std=c++11 -Wall app.cpp pile-up.cpp math-stack.cpp result.cpp instruction-set.cpp -o run/app
