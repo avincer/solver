@@ -1,17 +1,10 @@
+#include "program-factory.h"
 #include "node.h"
 #include "random.h"
-#include <vector>
+
 #include <iostream>
 
-typedef struct
-{
-	Node* node;
-	const int* instructions;
-	int instructionCount;
-}
-Program;
-
-class ProgramTree
+class ProgramTree : IProgramFactory
 {
 	private:
 		IRandom* random;
@@ -48,9 +41,14 @@ class ProgramTree
 			
 			Program p;
 			p.node = createNewNode(root);
-			p.instructions = &currentProgram[0];
-			p.instructionCount = currentProgram.size();
+			p.instructions = currentProgram;
 			return p;
+		}
+		
+		void setProgramScore(Program program, double score)
+		{
+			auto node = (Node*)program.node;
+			node->setScore(score);
 		}
 		
 		~ProgramTree()

@@ -31,9 +31,9 @@ int main()
 			std::cout << std::endl;
 			*/
 			
-			// todo: run algo here!
+			// todo: run program here!
 			double score = random.getDouble(1);
-			p.node->setScore(score);
+			tree.setProgramScore(p, score);
 		}
 		
 		auto elapsed = (clock() - start) / (double)CLOCKS_PER_SEC;
