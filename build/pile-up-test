@@ -1,0 +1,2 @@
+#!/bin/bash
+g++ -g -std=c++11 -Wall pile-up-test.cpp pile-up.cpp math-stack.cpp result.cpp -o run/pile-up-test
