@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 
 typedef struct
@@ -10,9 +12,9 @@ Program;
 class IProgramFactory
 {
 	public:
-		Program createNewProgram();
+		virtual Program createNewProgram() = 0;
 		
-		void setProgramScore(Program program, double score);
+		virtual void setProgramScore(Program program, double score) = 0;
 		
 		// todo - add functions to load and save state
 };

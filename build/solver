@@ -1,0 +1,2 @@
+#!/bin/bash
+g++ --std=c++11 -g solver-main.cpp tree.cpp node.cpp pile-up.cpp math-stack.cpp result.cpp -o run/solver
