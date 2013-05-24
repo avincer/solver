@@ -1,2 +1,2 @@
 #!/bin/bash
-g++ --std=c++11 -g tree-perf-test.cpp tree.cpp node.cpp -o run/tree-perf-test
+g++ --std=c++11 -O2 tree-perf-test.cpp tree.cpp node.cpp -o run/tree-perf-test
