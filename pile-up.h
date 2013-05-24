@@ -86,9 +86,9 @@ class VM : public IVM
 		float* memory;
 		int memorySize;
 		
-		// array of InstructionCount function pointers all set to null
-		// function pointers point to instruction methods on MathStack
-		Result (MathStack::*handlers[InstructionCount])() = { nullptr };
+		// vector of function pointers called handlers
+		// each entry is a method on MathStack
+		std::vector<Result (MathStack::*)()> handlers;
 		
 		std::vector<int> program;
 		

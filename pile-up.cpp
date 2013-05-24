@@ -16,6 +16,8 @@ VM::VM(int stackSize, int memorySize) : stack(stackSize)
 	debugMode = None;
 	
 	// set handlers for instructions
+	handlers.resize(InstructionCount, nullptr);
+	
 	handlers[dup] = &MathStack::dup;
 	handlers[swap] = &MathStack::swap;
 	handlers[drop] = &MathStack::drop;
