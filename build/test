@@ -1,2 +1,2 @@
 #!/bin/bash
-g++ --std=c++11 -g test.cpp -o test
+g++ --std=c++11 -g test.cpp tree.cpp node.cpp -o run/test

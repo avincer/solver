@@ -1,9 +1,9 @@
-#include "config.h"
+#include <vector>
 
-#define lastChild (instructionCount - 1)
-
+// forward declaration of the Node class for use in NodeLink
 class Node;
 
+// link to and information about a child node
 typedef struct
 {
 	// the child node, which may be null (unexplored)
@@ -17,11 +17,18 @@ typedef struct
 }
 NodeLink;
 
+// program tree node
+// each non-root node stores an instruction
+// every node /represents/ a program
 class Node
 {
 	private:
-		// note: instruction is meaningless for the root node
+		// the instruction for this node
+		// note: meaningless for the root node
 		int instruction;
+		
+		// the total number of instructions / children
+		int instructionCount;
 		
 		// score for this program only
 		double score;
@@ -32,77 +39,30 @@ class Node
 		// number of descendants
 		int totalDescendantCount;
 		
+		// the parent of this node (null for the root node)
 		Node* parent;
 		
-		// updateStats always called on a parent
-		void updateStats(double newScore, int childInstruction, double childWeight)
-		{
-			totalDescendantScore += newScore;
-			totalDescendantCount++;
-			
-			children[childInstruction].weight = childWeight;
-			
-			// update cumulative weights
-			// note: changing weight at position i affects all cumulative weights in position >= i
-			double cumWeight = childInstruction ? children[childInstruction - 1].cumWeight : 0;
-			for(int i = childInstruction; i < instructionCount; ++i)
-			{
-				cumWeight += children[i].weight;
-				children[i].cumWeight = cumWeight;
-			}
-			
-			if(parent)
-			{
-				double myWeight = (score + totalDescendantScore) / (totalDescendantCount + 1);
-				parent->updateStats(newScore, instruction, myWeight);
-			}
-		}
+		// note: updateStats always called on a parent
+		void updateStats(double newScore, int childInstruction, double childWeight);
 		
-		void init(int instruction, Node* parent)
-		{
-			this->instruction = instruction;
-			this->parent = parent;
-			score = 0;
-			totalDescendantScore = 0;
-			totalDescendantCount = 0;
-		}
+		// setup steps common to both constructors
+		void init(int instruction, int instructionCount, Node* parent);
 		
 	public:
-		// public so tree can select nodes according to weight
-		NodeLink children[instructionCount];
+		// direct descendants of this node
+		// note: public to allow program tree to choose children by weight
+		std::vector<NodeLink> children;
 
-		Node(int instruction, Node* parent, const double* weights, const double* cumWeights)
-		{
-			init(instruction, parent);
-			
-			for(int i = 0; i < instructionCount; ++i)
-			{
-				children[i].node = nullptr;
-				children[i].weight = weights[i];
-				children[i].cumWeight = cumWeights[i];
-			}
-		}
+		// ctor used by program tree
+		Node(int instruction, Node* parent, 
+			 const std::vector<double>& weights, 
+			 const std::vector<double>& cumWeights);
 		
-		Node(int instruction, Node* parent, const double* initialChildWeights)
-		{
-			init(instruction, parent);
-			
-			for(int i = 0; i < instructionCount; ++i)
-			{
-				children[i].node = nullptr;
-				children[i].weight = initialChildWeights[i];
-				children[i].cumWeight = initialChildWeights[i];
-				if(i)
-				{
-					children[i].cumWeight += children[i - 1].cumWeight;
-				}
-			}
-		}
+		// ctor used in testing
+		Node(int instruction, Node* parent, 
+			 const std::vector<double>& initialChildWeights);
 		
-		// setScore is always called on a leaf node, i.e. weight === score
-		void setScore(double score)
-		{
-			this->score = score;
-			if(parent) parent->updateStats(score, instruction, score);
-		}
+		// note: setScore is always called on a leaf node, 
+		// i.e. weight === score
+		void setScore(double score);
 };

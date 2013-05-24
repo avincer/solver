@@ -1,17 +1,17 @@
 #include "tree.h"
+#include "pile-up.h"
+
 #include <iostream>
 #include <ctime>
+
+using namespace PileUp;
 
 int main()
 {
 	CStdRandom random;
 	random.init(time(nullptr));
 	
-	double initialWeights[instructionCount];
-	for(int i = 0; i < instructionCount; ++i)
-	{
-		initialWeights[i] = 0.5;
-	}
+	std::vector<double> initialWeights(InstructionCount, 0.5);
 	
 	ProgramTree tree(&random, initialWeights);
 	for(int b = 0; b < 100; ++b)
@@ -37,6 +37,6 @@ int main()
 		}
 		
 		auto elapsed = (clock() - start) / (double)CLOCKS_PER_SEC;
-		//std::cout << "Added " << count << " new nodes in " << elapsed << " seconds" << std::endl;
+		std::cout << "Added " << count << " new nodes in " << elapsed << " seconds" << std::endl;
 	}
 }

@@ -1,6 +1,10 @@
 #include "tree.h"
+#include "pile-up.h"
+
 #include <iostream>
 #include <cassert>
+
+using namespace PileUp;
 
 void testRandomDistribution()
 {
@@ -42,16 +46,12 @@ void testNodeScoring()
 {
 	std::cout << "Testing node scoring ... ";
 	
-	double weights[instructionCount];
-	for(int i = 0; i < instructionCount; ++i)
-	{
-		weights[i] = 1;
-	}
+	std::vector<double> weights(InstructionCount, 1.0);
 	
 	Node* root = new Node(0, nullptr, weights);
 	
 	// check child links off root node were set properly
-	for(int i = 0; i < instructionCount; ++i)
+	for(int i = 0; i < InstructionCount; ++i)
 	{
 		NodeLink link = root->children[i];
 		assert(link.node == nullptr);
@@ -69,7 +69,7 @@ void testNodeScoring()
 	assert(link.weight == 3);
 	
 	// check that the cumulative weights were updated properly
-	for(int i = 0; i < instructionCount; ++i)
+	for(int i = 0; i < InstructionCount; ++i)
 	{
 		assert(root->children[i].cumWeight == i + 3);
 	}
@@ -85,7 +85,7 @@ void testNodeScoring()
 	// check cumulative weights were added up correctly at (a)
 	assert(a->children[0].cumWeight == 1);
 	assert(a->children[1].cumWeight == 5); // 1 + 4 
-	for(int i = 2; i < instructionCount; ++i)
+	for(int i = 2; i < InstructionCount; ++i)
 	{
 		assert(a->children[i].cumWeight == i + 4);
 	}
@@ -112,19 +112,15 @@ void testInstructionSelection()
 {
 	std::cout << "Testing instruction selection ... ";
 	
-	double weights[instructionCount];
-	for(int i = 0; i < instructionCount; ++i)
-	{
-		weights[i] = 0;
-	}
+	std::vector<double> weights(InstructionCount, 0);
 	weights[3] = 1;
 	weights[5] = 3;
 	
 	// expect roughly 3x as many (5) instructions as (3) instructions
 	// expect no instructions of any other type!
 
-	int bins[instructionCount];
-	for(int i = 0; i < instructionCount; ++i)
+	int bins[InstructionCount];
+	for(int i = 0; i < InstructionCount; ++i)
 	{
 		bins[i] = 0;
 	}
@@ -132,19 +128,19 @@ void testInstructionSelection()
 	CStdRandom random;
 	random.init(1337);
 	ProgramTree tree(&random, weights);
-	Node* node = tree.createNewProgram().node;
+	auto node = (Node*)tree.createNewProgram().node;
 	
 	for(int i = 0; i < 1000; ++i)
 	{
 		// expect instruction to be in range!
 		int instruction = tree.chooseNextInstruction(node);
 		assert(instruction >= 0);
-		assert(instruction < instructionCount);
+		assert(instruction < InstructionCount);
 		
 		bins[instruction]++;
 	}
 	
-	for(int i = 0; i < instructionCount; ++i)
+	for(int i = 0; i < InstructionCount; ++i)
 	{
 		if(i != 3 && i != 5)
 		{
