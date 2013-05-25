@@ -3,12 +3,14 @@
 #include <vector>
 #include <string>
 
-/*
- * virtual machine interface
- */
+// virtual machine interface
+// virtual machines can run programs and produce output
 class IVM
 {
 	public:
+		// returns the name of this vm
+		virtual std::string getName() = 0;
+		
 		// get how many instructions this VM supports
 		virtual int getInstructionCount() = 0;
 		

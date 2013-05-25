@@ -1,5 +1,6 @@
 #include <cstring>
 #include <iostream>
+#include <sstream>
 
 #include "pile-up.h"
 
@@ -10,6 +11,8 @@ typedef bool (VM::*Handler)();
 
 VM::VM(int stackSize, int memorySize) : stack(stackSize)
 {
+	this->stackSize = stackSize;
+	
 	memory = new float[memorySize];
 	this->memorySize = memorySize;
 	
@@ -49,6 +52,14 @@ VM::VM(int stackSize, int memorySize) : stack(stackSize)
 void VM::setDebugMode(DebugMode flags)
 {
 	debugMode = flags;
+}
+
+std::string VM::getName()
+{
+	std::ostringstream name;
+	name << "PileUp(stackSize = " << stackSize << ", memorySize = " 
+		<< memorySize << ")";
+	return name.str();
 }
 
 int VM::getInstructionCount()

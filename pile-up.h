@@ -84,7 +84,7 @@ class VM : public IVM
 		MathStack stack;
 		
 		float* memory;
-		int memorySize;
+		int stackSize, memorySize;
 		
 		// vector of function pointers called handlers
 		// each entry is a method on MathStack
@@ -101,6 +101,8 @@ class VM : public IVM
 		VM(int stackSize, int memorySize);
 		
 		void setDebugMode(DebugMode flags);
+		
+		std::string getName();
 		
 		int getInstructionCount();
 		

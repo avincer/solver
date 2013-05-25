@@ -30,11 +30,13 @@ class ProgramTree : public IProgramFactory
 		ProgramTree(IRandom* random, 
 					const std::vector<double>& initialChildWeights);
 		
+		std::string getName() { return "ProgramTree"; }
+		
 		// create and return a new program using MCTS
 		Program createNewProgram();
 		
 		// set the score for a generated program, and update stats
-		void setProgramScore(Program program, double score);
+		void recordProgramScore(Program program);
 		
 		~ProgramTree();
 		

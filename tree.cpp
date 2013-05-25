@@ -34,10 +34,10 @@ Program ProgramTree::createNewProgram()
 	return p;
 }
 
-void ProgramTree::setProgramScore(Program program, double score)
+void ProgramTree::recordProgramScore(Program program)
 {
 	auto node = (Node*)program.node;
-	node->setScore(score);
+	node->setScore(program.score);
 }
 
 ProgramTree::~ProgramTree()

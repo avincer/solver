@@ -35,8 +35,8 @@ int main()
 			*/
 			
 			// todo: run program here!
-			double score = random.getDouble(1);
-			tree.setProgramScore(p, score);
+			p.score = random.getDouble(1);
+			tree.recordProgramScore(p);
 		}
 		
 		auto elapsed = timer.getElapsedTime(true);

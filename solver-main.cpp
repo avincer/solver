@@ -5,7 +5,7 @@
 #include <csignal>
 #include <memory>
 
-Solver solver;
+std::unique_ptr<Solver> solver;
 
 void stop(int signal);
 
@@ -36,8 +36,9 @@ int main()
 	// terminate on user signal
 	signal(SIGINT, stop);
 	
-	// run the solver (go put the kettle on...)
-	solver.run(factory.get(), vm.get(), target, maxOps);
+	// build and run the solver (go put the kettle on...)
+	solver.reset(new Solver(factory.get(), vm.get(), target));
+	solver->run(maxOps);
 	
 	// todo - save state here
 	
@@ -46,5 +47,5 @@ int main()
 
 void stop(int signal)
 {
-	solver.stop();
+	solver->stop();
 }
