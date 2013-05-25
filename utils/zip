@@ -1,0 +1,4 @@
+#!/bin/bash
+version=`grep "version =" solver.h | cut -d '"' -f 2`
+fname="solver-$version.zip"
+zip -r $fname .git/* `git ls-files`
