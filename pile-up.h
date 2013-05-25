@@ -108,6 +108,8 @@ class VM : public IVM
 		
 		void loadProgram(const std::vector<int>& program);
 		
+		std::string formatProgram(const std::vector<int>& program);
+		
 		bool run(float seed, float* output, int maxOps);
 		
 		std::string getLastError();

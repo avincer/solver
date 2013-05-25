@@ -149,7 +149,7 @@ Result MathStack::mul()
 Result MathStack::div()
 {
 	if(pos < 2) return StackUnderflow;
-	stack[pos - 2] += stack[pos - 1];
+	stack[pos - 2] /= stack[pos - 1];
 	--pos;
 	return Ok;
 }

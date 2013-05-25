@@ -17,6 +17,9 @@ class IVM
 		// load a program
 		virtual void loadProgram(const std::vector<int>& program) = 0;
 		
+		// format the program as a string
+		virtual std::string formatProgram(const std::vector<int>& program) = 0;
+		
 		// run the program
 		// returns false if the program failed to produce output for any reason
 		virtual bool run(float seed, float* output, int maxOps) = 0;

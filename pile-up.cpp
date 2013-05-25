@@ -75,6 +75,16 @@ void VM::loadProgram(const std::vector<int>& program)
 	memset(memory, 0, memorySize * sizeof(float));
 }
 
+std::string VM::formatProgram(const std::vector<int>& program)
+{
+	std::ostringstream result;
+	for(int instruction: program)
+	{
+		result << translateInstruction((Instruction)instruction) << " ";
+	}
+	return result.str();
+}
+
 bool VM::run(float seed, float* output, int maxOps)
 {
 	if(!program.size()) throw "No program loaded!";

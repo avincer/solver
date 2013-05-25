@@ -55,20 +55,6 @@ void Solver::updateBestPrograms(Program& program, int outputLen)
 
 void Solver::outputStatus()
 {
-	// solver v0.1
-	//
-	// factory: ProgramTree
-	// vm:		PileUp( vm info )
-	// target:  [1, 2, 3, 4, ...]
-	// status:  tested xxx programs (current rate yyy programs per second)
-	//
-	// best programs
-	// 1. (score) (program)
-	//            (output)
-	//            
-	// 2. (score) (program)
-	//			  (output)
-	//
 	std::cout << " solver: v" << version << std::endl;
 	std::cout << std::endl;
 	std::cout << "factory: " << factory->getName() << std::endl;
@@ -84,6 +70,9 @@ void Solver::outputStatus()
 		std::cout << std::setw(6) << std::setprecision(3) << program.score;
 		std::cout << std::setw(0) << " | ";
 		outputSequence(program.output);
+		std::cout << "       | " << 
+			vm->formatProgram(program.instructions) << std::endl;
+		std::cout << std::endl;
 	}
 	std::cout << std::endl;
 }
