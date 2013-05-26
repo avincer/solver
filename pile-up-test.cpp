@@ -28,11 +28,16 @@ int main()
 		push3, mul, push1, add
 	};
 	
+	std::vector<int> alt
+	{
+		dup, push2, fmodulus, push2, mul, dec, mul
+	};
+	
 	int stackSize = 16, memorySize = 16, maxOps = 100;
 	auto debugMode = None; // (DebugMode)(DumpStackOnEntry | DumpStackAfterEachInstruction | DumpStackOnExit);
 	
 	VM vm(stackSize, memorySize);
-	vm.loadProgram(lin);
+	vm.loadProgram(alt);
 	vm.setDebugMode(debugMode);
 	
 	int i = 0;

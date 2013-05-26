@@ -17,7 +17,7 @@ int main()
 	feenableexcept(FE_INVALID | FE_OVERFLOW);
 	
 	// todo - allow selection of the VM (and options)
-	int stackSize = 2, memorySize = 16;
+	int stackSize = 16, memorySize = 16;
 	std::unique_ptr<IVM> vm(new PileUp::VM(stackSize, memorySize));
 	
 	// todo - allow selection of random seed?
@@ -34,8 +34,8 @@ int main()
 	
 	// todo - get target sequence from somewhere!
 	std::vector<float> target 
-	{ 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31 };
-	// { 1, -1, 2, -2, 3, -3, 4, -4, 5, -5 };
+	// { 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31 };
+	{ 0, 1, -2, 3, -4, 5, -6, 7, -8, 9 };
 	
 	// todo - get max ops from somewhere
 	int maxOps = 1000;

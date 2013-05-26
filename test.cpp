@@ -157,6 +157,9 @@ void testInstructionSelection()
 
 int main()
 {
+	std::cout << "sizeof(Node) == " << sizeof(Node) << std::endl;
+	std::cout << "sizeof(NodeLink) == " << sizeof(NodeLink) << std::endl;
+	std::cout << "sizeof(std::vector<NodeLink>) == " << sizeof(std::vector<NodeLink>) << std::endl;
 	testRandomDistribution();
 	testNodeScoring();
 	testInstructionSelection();
