@@ -14,6 +14,8 @@ const char* translateResult(Result result)
 			return "exceeded max op count";
 		case NoOutput:
 			return "no output";
+		case MathError:
+			return "math error";
 		default:
 			return "???";
 	}

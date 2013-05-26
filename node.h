@@ -1,4 +1,5 @@
 #include <vector>
+#include <ostream>
 
 // forward declaration of the Node class for use in NodeLink
 class Node;
@@ -65,4 +66,6 @@ class Node
 		// note: setScore is always called on a leaf node, 
 		// i.e. weight === score
 		void setScore(double score);
+		
+		void toXml(std::ostream& stream);
 };

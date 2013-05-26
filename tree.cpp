@@ -40,6 +40,12 @@ void ProgramTree::recordProgramScore(Program program)
 	node->setScore(program.score);
 }
 
+void ProgramTree::toXml(std::ostream& stream)
+{
+	stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << std::endl;
+	root->toXml(stream);
+}
+
 ProgramTree::~ProgramTree()
 {
 	cleanup(root);

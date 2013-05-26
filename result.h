@@ -4,7 +4,8 @@ typedef enum
 	StackUnderflow,
 	StackOverflow,
 	ExceededMaxOpCount,
-	NoOutput
+	NoOutput,
+	MathError,
 }
 Result;
 

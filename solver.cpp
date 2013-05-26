@@ -13,7 +13,7 @@ double Solver::computeScore(int outputLen)
 		double e = output[i] - target[i];
 		score += 1.0 / (1.0 + e * e);
 	}
-	return score;
+	return score / target.size();
 }
 
 void Solver::updateBestPrograms(Program& program, int outputLen)
@@ -61,8 +61,14 @@ void Solver::outputStatus()
 	std::cout << "     vm: " << vm->getName() << std::endl;
 	std::cout << " target: ";
 	outputSequence(target);
-	std::cout << " status: tested " << programCount << " programs (" 
-		<< (int)(updatePeriod / timer.getElapsedTime(true)) << " programs/second)" << std::endl;
+	std::cout << " status: tested " << programCount << " programs";
+	
+	auto elapsedTime = timer.getElapsedTime(true);
+	if(elapsedTime > 0)
+	{
+		std::cout << " (" << (int)(updatePeriod / elapsedTime) << " programs/second)";
+	}
+	std::cout << std::endl;
 	std::cout << std::endl;
 	std::cout << " score | output" << std::endl;
 	for(auto program: bestPrograms)

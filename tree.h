@@ -38,6 +38,8 @@ class ProgramTree : public IProgramFactory
 		// set the score for a generated program, and update stats
 		void recordProgramScore(Program program);
 		
+		void toXml(std::ostream& stream);
+		
 		~ProgramTree();
 		
 		// choose an instruction to consider at weighted random

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <ostream>
 
 // a program
 typedef struct
@@ -36,5 +37,5 @@ class IProgramFactory
 		// note: requires program.score to be set!
 		virtual void recordProgramScore(Program program) = 0;
 		
-		// todo - add functions to load and save state
+		virtual void toXml(std::ostream& stream) = 0;
 };
