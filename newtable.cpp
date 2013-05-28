@@ -1,4 +1,4 @@
-// Part of Inferer by Andrew & Alan Tennant.
+// Part of Inferer by Andrew Vincer & Alan Tennant.
 // alan2here@gmail.com
 
 #include <iostream>
