@@ -1,5 +1,7 @@
 #include "node.h"
 
+int Node::instructionCount = 0;
+
 void Node::updateStats(double newScore, int childInstruction, double childWeight)
 {
 	totalDescendantScore += newScore;
@@ -23,7 +25,7 @@ void Node::updateStats(double newScore, int childInstruction, double childWeight
 	}
 }
 
-void Node::init(int instruction, int instructionCount, Node* parent)
+void Node::init(int instruction, Node* parent)
 {
 	this->instruction = instruction;
 	this->parent = parent;
@@ -37,8 +39,8 @@ Node::Node(int instruction, Node* parent,
 		   const std::vector<double>& weights, 
 		   const std::vector<double>& cumWeights)
 {
-	instructionCount = weights.size();
-	init(instruction, instructionCount, parent);
+	if(!instructionCount) instructionCount = weights.size();
+	init(instruction, parent);
 
 	for(int i = 0; i < instructionCount; ++i)
 	{
@@ -51,8 +53,8 @@ Node::Node(int instruction, Node* parent,
 Node::Node(int instruction, Node* parent, 
 		   const std::vector<double>& initialChildWeights)
 {
-	instructionCount = initialChildWeights.size();
-	init(instruction, instructionCount, parent);
+	if(!instructionCount) instructionCount = initialChildWeights.size();
+	init(instruction, parent);
 	
 	for(int i = 0; i < instructionCount; ++i)
 	{

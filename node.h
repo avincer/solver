@@ -24,21 +24,23 @@ NodeLink;
 class Node
 {
 	private:
+		// the total number of instructions / children
+		// note: store this to avoid having to call std::vector.size() lots
+		// make static to avoid storing it in each node
+		static int instructionCount;
+		
 		// the instruction for this node
 		// note: meaningless for the root node
 		int instruction;
 		
-		// the total number of instructions / children
-		int instructionCount;
+		// number of descendants
+		int totalDescendantCount;
 		
 		// score for this program only
 		double score;
 		
 		// score for all descendants
 		double totalDescendantScore;
-		
-		// number of descendants
-		int totalDescendantCount;
 		
 		// the parent of this node (null for the root node)
 		Node* parent;
@@ -47,7 +49,7 @@ class Node
 		void updateStats(double newScore, int childInstruction, double childWeight);
 		
 		// setup steps common to both constructors
-		void init(int instruction, int instructionCount, Node* parent);
+		void init(int instruction, Node* parent);
 		
 	public:
 		// direct descendants of this node

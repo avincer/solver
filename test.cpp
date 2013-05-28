@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <set>
 
 using namespace PileUp;
 
@@ -157,9 +158,12 @@ void testInstructionSelection()
 
 int main()
 {
+	std::cout << "sizeof(int) == " << sizeof(int) << std::endl;
 	std::cout << "sizeof(Node) == " << sizeof(Node) << std::endl;
 	std::cout << "sizeof(NodeLink) == " << sizeof(NodeLink) << std::endl;
 	std::cout << "sizeof(std::vector<NodeLink>) == " << sizeof(std::vector<NodeLink>) << std::endl;
+	std::cout << "sizeof(std::set<NodeLink>) == " << sizeof(std::set<NodeLink>) << std::endl;
+	
 	testRandomDistribution();
 	testNodeScoring();
 	testInstructionSelection();
