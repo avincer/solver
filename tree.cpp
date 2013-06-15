@@ -10,9 +10,14 @@ ProgramTree::ProgramTree(IRandom* random,
 	// set node properties
 	Node::instructionCount = initialChildWeights.size();
 	Node::initialChildWeights = initialChildWeights;
+	Node::summedInitialChildWeights = 0;
+	for(auto w: initialChildWeights)
+	{
+		Node::summedInitialChildWeights += w;
+	}
 	
 	// note: instruction for root node is ignored
-	root = allocateNode(-1, nullptr);
+	root = new Node(-1, nullptr);
 }
 
 Program ProgramTree::createNewProgram()
@@ -41,8 +46,7 @@ void ProgramTree::toXml(std::ostream& stream)
 
 int ProgramTree::chooseNextInstruction(Node* parent)
 {
-	// todo - consider caching this for speed
-	double max = parent->sumChildWeights();
+	double max = parent->getSummedChildWeights();
 	
 	double x = random->getDouble(max);
 	double threshold = parent->getChildWeight(0);
@@ -53,12 +57,6 @@ int ProgramTree::chooseNextInstruction(Node* parent)
 		threshold += parent->getChildWeight(i);
 	}
 	return i;
-}
-
-Node* ProgramTree::allocateNode(int instruction, Node* parent)
-{
-	// todo - could probably do better with batch allocation
-	return new Node(instruction, parent);
 }
 
 Node* ProgramTree::createNewNode(Node* parent)

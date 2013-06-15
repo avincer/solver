@@ -4,12 +4,21 @@ int Node::instructionCount = 0;
 
 std::vector<double> Node::initialChildWeights;
 
+double Node::summedInitialChildWeights;
+
 void Node::updateStats(double newScore, int childInstruction, double childWeight)
 {
 	totalDescendantScore += newScore;
 	totalDescendantCount++;
 	
 	children.at(childInstruction).weight = childWeight;
+	
+	// update cumulative weights
+	summedChildWeights = 0;
+	for(int i = 0; i < instructionCount; ++i)
+	{
+		summedChildWeights += getChildWeight(i);
+	}
 	
 	if(parent != nullptr)
 	{
@@ -25,6 +34,7 @@ Node::Node(int instruction, Node* parent)
 	score = 0;
 	totalDescendantScore = 0;
 	totalDescendantCount = 0;
+	summedChildWeights = summedInitialChildWeights;
 }
 
 Node* Node::createChild(int instruction)
@@ -46,14 +56,9 @@ double Node::getChildWeight(int instruction)
 	return children.count(instruction) ? children[instruction].weight : initialChildWeights[instruction];
 }
 
-double Node::sumChildWeights()
+double Node::getSummedChildWeights()
 {
-	double sum = 0;
-	for(int i = 0; i < instructionCount; ++i)
-	{
-		sum += getChildWeight(i);
-	}
-	return sum;
+	return summedChildWeights;
 }
 
 void Node::setScore(double score)

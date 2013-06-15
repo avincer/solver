@@ -41,9 +41,6 @@ class ProgramTree : public IProgramFactory
 		int chooseNextInstruction(Node* parent);
 		
 	private:
-		// allocate a node (memory allocation only)
-		Node* allocateNode(int instruction, Node* parent);
-		
 		// create a new node and set properties
 		Node* createNewNode(Node* parent);
 };

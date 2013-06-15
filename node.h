@@ -31,6 +31,8 @@ class Node
 		// initial weights for children of this node
 		// note: static because all nodes use the same weights
 		static std::vector<double> initialChildWeights;
+		
+		static double summedInitialChildWeights;
 	
 	private:
 		// the instruction for this node
@@ -52,6 +54,9 @@ class Node
 		// direct descendants of this node
 		std::map<int, NodeLink> children;
 		
+		// total weight of all children, explored or not
+		double summedChildWeights;
+		
 		// note: updateStats always called on a parent
 		void updateStats(double newScore, int childInstruction, double childWeight);
 		
@@ -67,8 +72,8 @@ class Node
 		// else returns the initial child weight
 		double getChildWeight(int instruction);
 		
-		// sums getChildWeight over all child nodes, explored or not
-		double sumChildWeights();
+		// returns the sum of getChildWeight over all child nodes, explored or not
+		double getSummedChildWeights();
 		
 		// note: setScore is always called on a leaf node, 
 		// i.e. weight === score
