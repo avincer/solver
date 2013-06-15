@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <cassert>
-#include <set>
+#include <map>
 
 using namespace PileUp;
 
@@ -57,7 +57,6 @@ void testNodeScoring()
 		NodeLink link = root->children[i];
 		assert(link.node == nullptr);
 		assert(link.weight == 1);
-		assert(link.cumWeight == i + 1);
 	}
 	
 	// add a child node (a) to root in position 0 with score 3
@@ -69,12 +68,6 @@ void testNodeScoring()
 	NodeLink link = root->children[0];	
 	assert(link.weight == 3);
 	
-	// check that the cumulative weights were updated properly
-	for(int i = 0; i < InstructionCount; ++i)
-	{
-		assert(root->children[i].cumWeight == i + 3);
-	}
-	
 	// add a child node (b) to (a) in position 1 with score 4
 	Node* b = a->children[1].node = new Node(1, a, weights);
 	b->setScore(4);
@@ -82,14 +75,6 @@ void testNodeScoring()
 	// we expect the weight for (a) to be (3+4)/2 = 3.5
 	link = root->children[0];	
 	assert(link.weight == 3.5);
-	
-	// check cumulative weights were added up correctly at (a)
-	assert(a->children[0].cumWeight == 1);
-	assert(a->children[1].cumWeight == 5); // 1 + 4 
-	for(int i = 2; i < InstructionCount; ++i)
-	{
-		assert(a->children[i].cumWeight == i + 4);
-	}
 	
 	// add a new node (c) under (b)
 	Node* c = b->children[0].node = new Node(0, b, weights);
@@ -162,7 +147,7 @@ int main()
 	std::cout << "sizeof(Node) == " << sizeof(Node) << std::endl;
 	std::cout << "sizeof(NodeLink) == " << sizeof(NodeLink) << std::endl;
 	std::cout << "sizeof(std::vector<NodeLink>) == " << sizeof(std::vector<NodeLink>) << std::endl;
-	std::cout << "sizeof(std::set<NodeLink>) == " << sizeof(std::set<NodeLink>) << std::endl;
+	std::cout << "sizeof(std::map<int, NodeLink>) == " << sizeof(std::map<int, NodeLink>) << std::endl;
 	
 	testRandomDistribution();
 	testNodeScoring();

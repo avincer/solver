@@ -8,16 +8,6 @@ ProgramTree::ProgramTree(IRandom* random,
 	this->random = random;
 	this->initialChildWeights = initialChildWeights;
 	
-	// cache cumulative node weights for performance
-	// note: this only works because all nodes have same weighting
-	int instructionCount = initialChildWeights.size();
-	double sum = 0;
-	for(int i = 0; i < instructionCount; ++i)
-	{
-		sum += initialChildWeights[i];
-		cumInitialWeights.push_back(sum);
-	}
-	
 	// note: instruction for root node is ignored
 	root = allocateNode(-1, nullptr);
 }
@@ -53,12 +43,20 @@ ProgramTree::~ProgramTree()
 
 int ProgramTree::chooseNextInstruction(Node* parent)
 {
-	double max = parent->children.back().cumWeight;
+	// xxx - this should probably be cached!
+	double max = 0;
+	for(auto child : parent->children)
+	{
+		max += child.weight;
+	}
+	
 	double x = random->getDouble(max);
+	double threshold = parent->children[0].weight;
 	int i = 0;
-	while(x > parent->children[i].cumWeight)
+	while(x > threshold)
 	{
 		++i;
+		threshold += parent->children[i].weight;
 	}
 	return i;
 }
@@ -66,7 +64,7 @@ int ProgramTree::chooseNextInstruction(Node* parent)
 Node* ProgramTree::allocateNode(int instruction, Node* parent)
 {
 	// todo - could probably do better with batch allocation
-	return new Node(instruction, parent, initialChildWeights, cumInitialWeights);
+	return new Node(instruction, parent, initialChildWeights);
 }
 
 Node* ProgramTree::createNewNode(Node* parent)
@@ -77,13 +75,6 @@ Node* ProgramTree::createNewNode(Node* parent)
 		for(auto link: parent->children)
 		{
 			std::cout << link.weight << " ";
-		}
-		std::cout << std::endl;
-		std::cout << std::endl;
-		
-		for(auto link: parent->children)
-		{
-			std::cout << link.cumWeight << " ";
 		}
 		std::cout << std::endl;
 		std::cout << std::endl;
