@@ -6,7 +6,10 @@ ProgramTree::ProgramTree(IRandom* random,
 			const std::vector<double>& initialChildWeights)
 {
 	this->random = random;
-	this->initialChildWeights = initialChildWeights;
+	
+	// set node properties
+	Node::instructionCount = initialChildWeights.size();
+	Node::initialChildWeights = initialChildWeights;
 	
 	// note: instruction for root node is ignored
 	root = allocateNode(-1, nullptr);
@@ -36,27 +39,18 @@ void ProgramTree::toXml(std::ostream& stream)
 	root->toXml(stream);
 }
 
-ProgramTree::~ProgramTree()
-{
-	cleanup(root);
-}
-
 int ProgramTree::chooseNextInstruction(Node* parent)
 {
-	// xxx - this should probably be cached!
-	double max = 0;
-	for(auto child : parent->children)
-	{
-		max += child.weight;
-	}
+	// todo - consider caching this for speed
+	double max = parent->sumChildWeights();
 	
 	double x = random->getDouble(max);
-	double threshold = parent->children[0].weight;
+	double threshold = parent->getChildWeight(0);
 	int i = 0;
 	while(x > threshold)
 	{
 		++i;
-		threshold += parent->children[i].weight;
+		threshold += parent->getChildWeight(i);
 	}
 	return i;
 }
@@ -64,43 +58,24 @@ int ProgramTree::chooseNextInstruction(Node* parent)
 Node* ProgramTree::allocateNode(int instruction, Node* parent)
 {
 	// todo - could probably do better with batch allocation
-	return new Node(instruction, parent, initialChildWeights);
+	return new Node(instruction, parent);
 }
 
 Node* ProgramTree::createNewNode(Node* parent)
 {
-	// debug weights
-	if(false)
-	{
-		for(auto link: parent->children)
-		{
-			std::cout << link.weight << " ";
-		}
-		std::cout << std::endl;
-		std::cout << std::endl;
-	}
-	
 	// choose instruction
 	int i = chooseNextInstruction(parent);
 	currentProgram.push_back(i);
 	
-	if(parent->children[i].node == nullptr)
+	auto node = parent->getChild(i);
+	if(node == nullptr)
 	{
 		// create and return new node
-		return parent->children[i].node = allocateNode(i, parent);
+		return parent->createChild(i);
 	}
 	else
 	{
 		// keep exploring
-		return createNewNode(parent->children[i].node);
+		return createNewNode(node);
 	}
-}
-
-void ProgramTree::cleanup(Node* node)
-{
-	for(auto link: node->children)
-	{
-		if(link.node != nullptr) cleanup(link.node);
-	}
-	delete node;
 }

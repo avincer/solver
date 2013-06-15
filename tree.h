@@ -13,9 +13,6 @@ class ProgramTree : public IProgramFactory
 		// random number source
 		IRandom* random;
 		
-		// weights
-		std::vector<double> initialChildWeights;
-		
 		// the root node (program of 0 length)
 		Node* root;
 		
@@ -39,8 +36,6 @@ class ProgramTree : public IProgramFactory
 		
 		void toXml(std::ostream& stream);
 		
-		~ProgramTree();
-		
 		// choose an instruction to consider at weighted random
 		// note: this is public for testing
 		int chooseNextInstruction(Node* parent);
@@ -51,7 +46,4 @@ class ProgramTree : public IProgramFactory
 		
 		// create a new node and set properties
 		Node* createNewNode(Node* parent);
-		
-		// free memory
-		void cleanup(Node* node);
 };
