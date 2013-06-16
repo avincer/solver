@@ -75,9 +75,10 @@ void Solver::outputStatus()
 	runTime -= minutes * 60;
 	
 	std::cout << "   time: " << hours << ":";
-	std::cout << std::setfill('0') << std::setw(2) << minutes << ":";
-	std::cout << std::setfill('0') << std::setw(2) << (int)runTime;
-	std::cout << std::endl;
+	std::cout << std::setfill('0');
+	std::cout << std::setw(2) << minutes << ":";
+	std::cout << std::setw(2) << (int)runTime;
+	std::cout << std::setfill(' ') << std::endl;
 	
 	std::cout << std::endl;
 	std::cout << " score | output" << std::endl;
