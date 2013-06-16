@@ -32,10 +32,19 @@ int main()
 	// todo - allow selecting which program factory to use
 	std::unique_ptr<IProgramFactory> factory(new ProgramTree(random.get(), initialWeights));
 	
+	// 3x + 1
+	std::vector<float> lin { 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31 };
+
+	std::vector<float> alt { 0, 1, -2, 3, -4, 5, -6, 7, -8, 9 };
+	
+	// x^2 + x - 3
+	std::vector<float> quad1 { -3, -1, 3, 9, 17, 27, 39, 53, 69, 87 };
+	
+	// x^2 + x - 6 (x in [-5, 4])
+	std::vector<float> quad2 { 14, 6, 0, -4, -6, -6, -4, 0, 6, 14 };
+	
 	// todo - get target sequence from somewhere!
-	std::vector<float> target 
-	// { 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31 };
-	{ 0, 1, -2, 3, -4, 5, -6, 7, -8, 9 };
+	std::vector<float> target = quad1;
 	
 	// todo - get max ops from somewhere
 	int maxOps = 1000;
