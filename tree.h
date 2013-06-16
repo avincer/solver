@@ -15,7 +15,6 @@ class ProgramTree : public IProgramFactory
 		
 		// weights
 		std::vector<double> initialChildWeights;
-		std::vector<double> cumInitialWeights;
 		
 		// the root node (program of 0 length)
 		Node* root;
