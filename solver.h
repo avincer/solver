@@ -30,8 +30,11 @@ class Solver
 		int programCount;
 		bool running;
 		
-		// use a timer to measure speed
+		// use a timer to measure run time
 		Timer timer;
+		
+		// remember time of last update for computing speed
+		double lastUpdateTime;
 		
 		// the scoring function
 		// computes score from target and output vectors

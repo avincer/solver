@@ -61,14 +61,24 @@ void Solver::outputStatus()
 	std::cout << "     vm: " << vm->getName() << std::endl;
 	std::cout << " target: ";
 	outputSequence(target);
-	std::cout << " status: tested " << programCount << " programs";
 	
-	auto elapsedTime = timer.getElapsedTime(true);
-	if(elapsedTime > 0)
-	{
-		std::cout << " (" << (int)(updatePeriod / elapsedTime) << " programs/second)";
-	}
+	auto runTime = timer.getElapsedTime(false);
+	auto diffTime = runTime - lastUpdateTime;
+	lastUpdateTime = runTime;
+	
+	std::cout << " status: tested " << programCount << " programs";
+	std::cout << " (" << (int)(updatePeriod / diffTime) << " programs/second)" << std::endl;
+	
+	auto hours = (int)(runTime / 3600);
+	runTime -= hours * 3600;
+	auto minutes = (int)(runTime / 60);
+	runTime -= minutes * 60;
+	
+	std::cout << "   time: " << hours << ":";
+	std::cout << std::setfill('0') << std::setw(2) << minutes << ":";
+	std::cout << std::setfill('0') << std::setw(2) << (int)runTime;
 	std::cout << std::endl;
+	
 	std::cout << std::endl;
 	std::cout << " score | output" << std::endl;
 	for(auto program: bestPrograms)
