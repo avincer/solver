@@ -48,7 +48,7 @@ void Node::toXml(std::ostream& stream)
 	stream << "score=\"" << score << "\" ";
 	stream << "totalDescendantScore=\"" << totalDescendantScore << "\" ";
 	stream << "totalDescendantCount=\"" << totalDescendantCount << "\"";
-	stream << ">" << std::endl;
+	stream << ">\n";
 	for(int i = 0; i < instructionCount; ++i)
 	{
 		if(children[i].node == nullptr)
@@ -56,12 +56,12 @@ void Node::toXml(std::ostream& stream)
 			stream << "<stub ";
 			stream << "instruction=\"" << i << "\" ";
 			stream << "weight=\"" << children[i].weight << "\"";
-			stream << "/>" << std::endl;
+			stream << "/>\n";
 		}
 		else
 		{
 			children[i].node->toXml(stream);
 		}
 	}
-	stream << "</node>" << std::endl;
+	stream << "</node>\n";
 }
