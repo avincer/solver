@@ -3,13 +3,21 @@
 #include <iostream>
 
 ProgramTree::ProgramTree(IRandom* random, 
-			const std::vector<double>& initialChildWeights)
+			const std::vector<double>& initialChildWeights,
+			SearchStrategy searchStrategy)
 {
 	this->random = random;
 	this->initialChildWeights = initialChildWeights;
+	this->searchStrategy = searchStrategy;
 	
 	// note: instruction for root node is ignored
 	root = allocateNode(-1, nullptr);
+}
+
+std::string ProgramTree::getName()
+{
+	return searchStrategy == Random ? 
+		"ProgramTree(random search)" : "ProgramTree(directed search)";
 }
 
 Program ProgramTree::createNewProgram()
@@ -43,22 +51,29 @@ ProgramTree::~ProgramTree()
 
 int ProgramTree::chooseNextInstruction(Node* parent)
 {
-	// xxx - this should probably be cached!
-	double max = 0;
-	for(auto child : parent->children)
+	if(searchStrategy == Random)
 	{
-		max += child.weight;
+		return random->getInt(initialChildWeights.size());
 	}
-	
-	double x = random->getDouble(max);
-	double threshold = parent->children[0].weight;
-	int i = 0;
-	while(x > threshold)
+	else
 	{
-		++i;
-		threshold += parent->children[i].weight;
+		// xxx - this should probably be cached!
+		double max = 0;
+		for(auto child : parent->children)
+		{
+			max += child.weight;
+		}
+		
+		double x = random->getDouble(max);
+		double threshold = parent->children[0].weight;
+		int i = 0;
+		while(x > threshold)
+		{
+			++i;
+			threshold += parent->children[i].weight;
+		}
+		return i;
 	}
-	return i;
 }
 
 Node* ProgramTree::allocateNode(int instruction, Node* parent)

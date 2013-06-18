@@ -30,7 +30,7 @@ int main()
 	std::vector<double> initialWeights(vm->getInstructionCount(), 0.5);
 	
 	// todo - allow selecting which program factory to use
-	std::unique_ptr<IProgramFactory> factory(new ProgramTree(random.get(), initialWeights));
+	std::unique_ptr<IProgramFactory> factory(new ProgramTree(random.get(), initialWeights, Directed));
 	
 	// 3x + 1
 	std::vector<float> lin { 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31 };
@@ -57,8 +57,8 @@ int main()
 	solver->run(maxOps);
 	
 	// save progress
-	//std::ofstream file("tree.xml");
-	//factory->toXml(file);
+	std::ofstream file("tree.xml");
+	factory->toXml(file);
 	
 	return 0;
 }
