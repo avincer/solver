@@ -14,7 +14,7 @@ void stop(int signal);
 int main()
 {
 	// throw on floating point exceptions
-	feenableexcept(FE_INVALID | FE_OVERFLOW);
+    // feenableexcept(FE_INVALID | FE_OVERFLOW); // needs linux specificity guard
 	
 	// todo - allow selection of the VM (and options)
 	int stackSize = 16, memorySize = 16;
@@ -45,7 +45,7 @@ int main()
 	
 	// build and run the solver (go put the kettle on...)
 	solver.reset(new Solver(factory.get(), vm.get(), target));
-	solver->run(maxOps);
+    solver->run(maxOps);
 	
 	// save progress
 	//std::ofstream file("tree.xml");

@@ -19,6 +19,6 @@ class CStdRandom : public IRandom
 		
 		double getDouble(double max)
 		{
-			return rand() * max / (RAND_MAX - 1.0);
+            return rand() * max / RAND_MAX;
 		}
 };
