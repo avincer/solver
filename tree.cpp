@@ -56,7 +56,8 @@ void ProgramTree::dumpProgramInformation(const std::vector<int>& program)
 			std::cout << "/" << program[j];
 		}
 		
-		bool exists = node->children[i].node != nullptr;
+		auto link = node->children[program[i]];
+		bool exists = link.node != nullptr;
 		std::cout << " " << (exists ? "exists" : "unexplored");
 		
 		double totalWeight = 0;
@@ -65,7 +66,7 @@ void ProgramTree::dumpProgramInformation(const std::vector<int>& program)
 			totalWeight += node->children[c].weight;
 		}
 		
-		double weight = node->children[i].weight;
+		double weight = link.weight;
 		double fractionalWeight = weight / totalWeight;
 		chance *= fractionalWeight;
 		
@@ -73,7 +74,7 @@ void ProgramTree::dumpProgramInformation(const std::vector<int>& program)
 		std::cout << " (" << fractionalWeight * 100 << "%)";
 		std::cout << " chance " << (long)(1.0 / chance) << ":1" << std::endl;
 		
-		node = node->children[i].node;
+		node = link.node;
 	}
 	std::cout << std::endl;
 }
