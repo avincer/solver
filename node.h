@@ -7,7 +7,7 @@ class Node;
 // link to and information about a child node
 typedef struct
 {
-	// the child node, which may NOT be null
+	// the child node, which may be null
 	Node* node;
 	
 	// weight for this child node

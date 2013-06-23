@@ -50,6 +50,8 @@ class ProgramTree : public IProgramFactory
 		
 		void toXml(std::ostream& stream);
 		
+		void dumpProgramInformation(const std::vector<int>& program);
+		
 		~ProgramTree();
 		
 		// choose an instruction to consider at weighted random

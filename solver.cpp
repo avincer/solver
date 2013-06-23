@@ -159,3 +159,8 @@ void Solver::save(const std::string& fileName)
 	std::ofstream file(fileName);
 	factory->toXml(file);
 }
+
+void Solver::dumpProgramInformation(const std::vector<int>& program)
+{
+	factory->dumpProgramInformation(program);
+}

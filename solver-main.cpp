@@ -5,7 +5,16 @@
 #include <csignal>
 #include <memory>
 #include <iostream>
+#include <sstream>
+
+// os specific headers
+// note: can dump preprocessor macros for gcc using gcc -dM -E - < /dev/null
+// gcc defines linux, __linux and __linux__
+// s/o suggests using __linux
+// http://stackoverflow.com/questions/5919996/how-to-detect-reliably-mac-os-x-ios-linux-windows-in-c-preprocessor
+#ifdef __linux
 #include <fenv.h>
+#endif
 
 std::unique_ptr<Solver> solver;
 
@@ -13,8 +22,11 @@ void pause(int signal);
 
 int main()
 {
+	// todo - find windows equivalent of this
+#ifdef __linux
 	// throw on floating point exceptions
 	feenableexcept(FE_INVALID | FE_OVERFLOW);
+#endif
 	
 	// todo - allow selection of the VM (and options)
 	int stackSize = 16, memorySize = 16, maxOps = 1000;
@@ -38,7 +50,7 @@ int main()
 	std::vector<float> alt { 0, 1, -2, 3, -4, 5, -6, 7, -8, 9 };
 	
 	// x^2 + x - 3
-	std::vector<float> quad1 { -3, -1, 3, 9, 17, 27, 39, 53, 69, 87 };
+	std::vector<float> quad1 { -3, -1, 3, 9, 17, 27, 39, 53, 69, 87, 107 };
 	
 	// x^2 + x - 6 (x in [-5, 4])
 	std::vector<float> quad2 { 14, 6, 0, -4, -6, -6, -4, 0, 6, 14 };
@@ -62,6 +74,7 @@ void pause(int signal)
 	std::cout << "Paused." << std::endl;
 	std::cout << std::endl;
 	std::cout << "c - continue" << std::endl;
+	std::cout << "i /path/to/program - show program information" << std::endl;
 	std::cout << "s - save program tree to xml" << std::endl;
 	std::cout << "q - quit" << std::endl;
 	std::cout << std::endl;
@@ -71,13 +84,31 @@ void pause(int signal)
 		std::cout << "> ";
 		char cmd;
 		std::cin >> cmd;
+
+		// note use of braces to prevent "jump to case label crosses initialization" error
 		switch(cmd)
 		{
 			case 'c':
 				return;
+			case 'i':
+				{
+					// parse the path into a vector of int (makes me miss C#)
+					std::string programPath, temp;
+					std::cin >> programPath;
+					std::istringstream ss(programPath);
+					std::vector<int> program;
+					while(std::getline(ss, temp, '/'))
+					{
+						//std::cout << "'" << temp << "'" << std::endl;
+						// first entry is empty string
+						if(temp.size()) program.push_back(std::stoi(temp));
+					}
+					
+					solver->dumpProgramInformation(program);
+				}
+				break;
 			case 's':
 				{
-					// note: use braces to prevent "jump to case label crosses initialization" error
 					// todo - choice of file name?
 					std::string fileName = "tree.xml";
 					std::cout << "Saving state to " << fileName << " ..." << std::endl;

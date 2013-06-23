@@ -58,4 +58,6 @@ class Solver
 		// todo - load function
 		
 		void save(const std::string& fileName);
+		
+		void dumpProgramInformation(const std::vector<int>& program);
 };

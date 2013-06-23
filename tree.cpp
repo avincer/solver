@@ -44,6 +44,40 @@ void ProgramTree::toXml(std::ostream& stream)
 	root->toXml(stream);
 }
 
+void ProgramTree::dumpProgramInformation(const std::vector<int>& program)
+{
+	double chance = 1;
+	auto node = root;
+	for(int i = 0; i < program.size() && node != nullptr; ++i)
+	{
+		// print sub-program path
+		for(int j = 0; j <= i; ++j)
+		{
+			std::cout << "/" << program[j];
+		}
+		
+		bool exists = node->children[i].node != nullptr;
+		std::cout << " " << (exists ? "exists" : "unexplored");
+		
+		double totalWeight = 0;
+		for(int c = 0; c < node->children.size(); ++c)
+		{
+			totalWeight += node->children[c].weight;
+		}
+		
+		double weight = node->children[i].weight;
+		double fractionalWeight = weight / totalWeight;
+		chance *= fractionalWeight;
+		
+		std::cout << " weight " << weight << " / " << totalWeight;
+		std::cout << " (" << fractionalWeight * 100 << "%)";
+		std::cout << " chance " << (long)(1.0 / chance) << ":1" << std::endl;
+		
+		node = node->children[i].node;
+	}
+	std::cout << std::endl;
+}
+
 ProgramTree::~ProgramTree()
 {
 	cleanup(root);
