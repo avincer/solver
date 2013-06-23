@@ -114,7 +114,7 @@ Solver::Solver(IProgramFactory* factory, IVM* vm,
 	programCount = 0;
 }
 
-void Solver::run(int maxOps)
+void Solver::run()
 {
 	running = true;
 	timer.start();
@@ -130,7 +130,7 @@ void Solver::run(int maxOps)
 		int i = 0;
 		for(; (i < target.size()) && result; ++i)
 		{
-			result = vm->run(i, &output[i], maxOps);
+			result = vm->run(i, &output[i]);
 		}
 		
 		// score the program and update the program factory stats

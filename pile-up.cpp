@@ -9,12 +9,14 @@ namespace PileUp
 
 typedef bool (VM::*Handler)();
 
-VM::VM(int stackSize, int memorySize) : stack(stackSize)
+VM::VM(int stackSize, int memorySize, int maxOps) : stack(stackSize)
 {
 	this->stackSize = stackSize;
 	
 	memory = new float[memorySize];
 	this->memorySize = memorySize;
+	
+	this->maxOps = maxOps;
 	
 	debugMode = None;
 	
@@ -85,7 +87,7 @@ std::string VM::formatProgram(const std::vector<int>& program)
 	return result.str();
 }
 
-bool VM::run(float seed, float* output, int maxOps)
+bool VM::run(float seed, float* output)
 {
 	if(!program.size()) throw "No program loaded!";
 	

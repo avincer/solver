@@ -51,8 +51,7 @@ class Solver
 		Solver(IProgramFactory* factory, IVM* vm, 
 			   const std::vector<float>& target);
 
-		// todo - why is maxOps here?
-		void run(int maxOps);
+		void run();
 		
 		void stop();
 		

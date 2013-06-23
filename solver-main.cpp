@@ -17,8 +17,8 @@ int main()
 	feenableexcept(FE_INVALID | FE_OVERFLOW);
 	
 	// todo - allow selection of the VM (and options)
-	int stackSize = 16, memorySize = 16;
-	std::unique_ptr<IVM> vm(new PileUp::VM(stackSize, memorySize));
+	int stackSize = 16, memorySize = 16, maxOps = 1000;
+	std::unique_ptr<IVM> vm(new PileUp::VM(stackSize, memorySize, maxOps));
 	
 	// todo - allow selection of random seed?
 	auto seed = (int)time(nullptr);
@@ -46,15 +46,12 @@ int main()
 	// todo - get target sequence from somewhere!
 	std::vector<float> target = quad1;
 	
-	// todo - get max ops from somewhere
-	int maxOps = 1000;
-	
 	// terminate on user signal
 	signal(SIGINT, stop);
 	
 	// build and run the solver (go put the kettle on...)
 	solver.reset(new Solver(factory.get(), vm.get(), target));
-	solver->run(maxOps);
+	solver->run();
 	
 	// save progress
 	std::ofstream file("tree.xml");

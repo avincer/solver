@@ -84,7 +84,7 @@ class VM : public IVM
 		MathStack stack;
 		
 		float* memory;
-		int stackSize, memorySize;
+		int stackSize, memorySize, maxOps;
 		
 		// vector of function pointers called handlers
 		// each entry is a method on MathStack
@@ -98,7 +98,7 @@ class VM : public IVM
 		Result result;
 		
 	public:
-		VM(int stackSize, int memorySize);
+		VM(int stackSize, int memorySize, int maxOps);
 		
 		void setDebugMode(DebugMode flags);
 		
@@ -110,7 +110,7 @@ class VM : public IVM
 		
 		std::string formatProgram(const std::vector<int>& program);
 		
-		bool run(float seed, float* output, int maxOps);
+		bool run(float seed, float* output);
 		
 		std::string getLastError();
 		
