@@ -33,11 +33,16 @@ int main()
 		dup, push2, fmodulus, push2, mul, dec, mul
 	};
 	
+	std::vector<int> quad1
+	{
+		dup, inc, mul, push3, sub
+	};
+	
 	int stackSize = 16, memorySize = 16, maxOps = 100;
 	auto debugMode = None; // (DebugMode)(DumpStackOnEntry | DumpStackAfterEachInstruction | DumpStackOnExit);
 	
-	VM vm(stackSize, memorySize);
-	vm.loadProgram(alt);
+	VM vm(stackSize, memorySize, maxOps);
+	vm.loadProgram(quad1);
 	vm.setDebugMode(debugMode);
 	
 	int i = 0;
@@ -45,7 +50,7 @@ int main()
 
 	do
 	{
-		bool result = vm.run(i, &output, maxOps);
+		bool result = vm.run(i, &output);
 		if(debugMode) std::cout << std::endl;
 		
 		if(result)

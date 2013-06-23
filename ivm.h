@@ -22,7 +22,7 @@ class IVM
 		
 		// run the program
 		// returns false if the program failed to produce output for any reason
-		virtual bool run(float seed, float* output, int maxOps) = 0;
+		virtual bool run(float seed, float* output) = 0;
 		
 		// returns information about why the program failed to produce output
 		virtual std::string getLastError() = 0;

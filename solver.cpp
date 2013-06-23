@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 
 double Solver::computeScore(int outputLen)
 {
@@ -61,14 +62,25 @@ void Solver::outputStatus()
 	std::cout << "     vm: " << vm->getName() << std::endl;
 	std::cout << " target: ";
 	outputSequence(target);
-	std::cout << " status: tested " << programCount << " programs";
 	
-	auto elapsedTime = timer.getElapsedTime(true);
-	if(elapsedTime > 0)
-	{
-		std::cout << " (" << (int)(updatePeriod / elapsedTime) << " programs/second)";
-	}
-	std::cout << std::endl;
+	auto runTime = timer.getElapsedTime(false);
+	auto diffTime = runTime - lastUpdateTime;
+	lastUpdateTime = runTime;
+	
+	std::cout << " status: tested " << programCount << " programs";
+	std::cout << " (" << (int)(updatePeriod / diffTime) << " programs/second)" << std::endl;
+	
+	auto hours = (int)(runTime / 3600);
+	runTime -= hours * 3600;
+	auto minutes = (int)(runTime / 60);
+	runTime -= minutes * 60;
+	
+	std::cout << "   time: " << hours << ":";
+	std::cout << std::setfill('0');
+	std::cout << std::setw(2) << minutes << ":";
+	std::cout << std::setw(2) << (int)runTime;
+	std::cout << std::setfill(' ') << std::endl;
+	
 	std::cout << std::endl;
 	std::cout << " score | output" << std::endl;
 	for(auto program: bestPrograms)
@@ -103,7 +115,7 @@ Solver::Solver(IProgramFactory* factory, IVM* vm,
 	programCount = 0;
 }
 
-void Solver::run(int maxOps)
+void Solver::run()
 {
 	running = true;
 	timer.start();
@@ -119,7 +131,7 @@ void Solver::run(int maxOps)
 		int i = 0;
 		for(; (i < target.size()) && result; ++i)
 		{
-			result = vm->run(i, &output[i], maxOps);
+			result = vm->run(i, &output[i]);
 		}
 		
 		// score the program and update the program factory stats
@@ -138,4 +150,17 @@ void Solver::run(int maxOps)
 void Solver::stop()
 {
 	running = false;
+}
+
+void Solver::save(const std::string& fileName)
+{
+	// todo - we should save everything we need to resume the search,
+	// not just the factory information
+	std::ofstream file(fileName);
+	factory->toXml(file);
+}
+
+void Solver::dumpProgramInformation(const std::vector<int>& program)
+{
+	factory->dumpProgramInformation(program);
 }
