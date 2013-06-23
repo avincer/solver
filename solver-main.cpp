@@ -4,12 +4,12 @@
 
 #include <csignal>
 #include <memory>
-#include <fstream>
+#include <iostream>
 #include <fenv.h>
 
 std::unique_ptr<Solver> solver;
 
-void stop(int signal);
+void pause(int signal);
 
 int main()
 {
@@ -47,20 +47,49 @@ int main()
 	std::vector<float> target = quad1;
 	
 	// terminate on user signal
-	signal(SIGINT, stop);
+	signal(SIGINT, pause);
 	
 	// build and run the solver (go put the kettle on...)
 	solver.reset(new Solver(factory.get(), vm.get(), target));
 	solver->run();
 	
-	// save progress
-	std::ofstream file("tree.xml");
-	factory->toXml(file);
-	
 	return 0;
 }
 
-void stop(int signal)
+void pause(int signal)
 {
-	solver->stop();
+	std::cout << std::endl;
+	std::cout << "Paused." << std::endl;
+	std::cout << std::endl;
+	std::cout << "c - continue" << std::endl;
+	std::cout << "s - save program tree to xml" << std::endl;
+	std::cout << "q - quit" << std::endl;
+	std::cout << std::endl;
+	
+	while(1)
+	{
+		std::cout << "> ";
+		char cmd;
+		std::cin >> cmd;
+		switch(cmd)
+		{
+			case 'c':
+				return;
+			case 's':
+				{
+					// note: use braces to prevent "jump to case label crosses initialization" error
+					// todo - choice of file name?
+					std::string fileName = "tree.xml";
+					std::cout << "Saving state to " << fileName << " ..." << std::endl;
+					solver->save("tree.xml");
+					std::cout << "Complete." << std::endl;
+				}
+				break;
+			case 'q':
+				solver->stop();
+				return;
+			default:
+				std::cout << "Unknown command " << cmd << std::endl;
+		}
+	}
 }

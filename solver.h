@@ -55,5 +55,7 @@ class Solver
 		
 		void stop();
 		
-		// something to do with loading / saving here?
+		// todo - load function
+		
+		void save(const std::string& fileName);
 };

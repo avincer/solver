@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 
 double Solver::computeScore(int outputLen)
 {
@@ -149,4 +150,12 @@ void Solver::run()
 void Solver::stop()
 {
 	running = false;
+}
+
+void Solver::save(const std::string& fileName)
+{
+	// todo - we should save everything we need to resume the search,
+	// not just the factory information
+	std::ofstream file(fileName);
+	factory->toXml(file);
 }
