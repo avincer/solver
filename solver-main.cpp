@@ -39,7 +39,7 @@ int main()
 	random->init(seed);
 	
 	// todo - allow setting initial weights
-	std::vector<double> initialWeights(vm->getInstructionCount(), 0.5);
+    std::vector<double> initialWeights(vm->supportedInstructionCount(), 0.5);
 	
 	// todo - allow selecting which program factory to use
 	std::unique_ptr<IProgramFactory> factory(new ProgramTree(random.get(), initialWeights, Directed));

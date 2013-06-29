@@ -18,7 +18,7 @@ class IVM
 
         virtual std::string returnStringForm(const std::vector<int>& program) = 0;
 
-        virtual std::vector<int>& getCodeReadOnly();
+        virtual std::vector<int>& getCodeReadOnly() {}
 
         // returns false if the program failed to produce output
 		virtual bool run(float seed, float* output) = 0;

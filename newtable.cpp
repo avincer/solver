@@ -36,18 +36,17 @@ namespace VMs
                     const std::vector<int>& program)
                 {
                     std::string str;
-                    std::vector<int>::size_type
-                        code_length = program.size();
+                    auto code_length = program.size();
                     for (unsigned short n = 0; n < code_length; n++)
                         str += instruction_names[program[n]] +
-                            (n < code_length - 1 ? " ": "");
-                    VM tmp();
-                    tmp.loadProgram(program);
-                    str += ", run time: ";
-                    float* output;
-                    tmp.runTime_code_output = true;
-                    tmp.run(0, output, 100000);
-                    str += tmp.last_runTime_code();
+                            ((n < code_length - 1) ? " ": "");
+                    // VM tmp();
+                    // tmp.loadProgram(program);
+                    // str += ", run time: ";
+                    // float* output;
+                    // tmp.runTime_code_output = true;
+                    // tmp.run(0, output, 100000);
+                    // str += tmp.last_runTime_code();
                     return str;
                 }
 
@@ -242,10 +241,11 @@ namespace VMs
                 unsigned int
                     most_run_time_per_output,
                     largest_code_runTime_size;
-                const static std::vector<std::string> instruction_names =
-                    // maybe this members initialisation can go into a static constructor instead
-                    {"end", "goto", "if", "=", "+", "-", "toggle",
-                        "output", "increase", "increment", "decrement"};
+                const static std::vector<std::string> instruction_names;
         };
+
+        const std::vector<std::string> VM::instruction_names =
+            {"end", "goto", "if", "=", "+", "-", "toggle",
+                "output", "increase", "increment", "decrement"};
     }
 }
