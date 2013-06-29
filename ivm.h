@@ -21,7 +21,7 @@ class IVM
         virtual std::vector<int>& getCodeReadOnly();
 
         // returns false if the program failed to produce output
-		virtual bool run(float seed, float* output, int maxOps) = 0;
+		virtual bool run(float seed, float* output) = 0;
         // why does this need a seed?
 
         // why the program failed to produce output

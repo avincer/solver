@@ -2,3 +2,5 @@
 run/*
 *kate-swp
 *.zip
+*.out.*
+tree.xml

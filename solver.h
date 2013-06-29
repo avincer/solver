@@ -30,8 +30,11 @@ class Solver
 		int programCount;
 		bool running;
 		
-		// use a timer to measure speed
+		// use a timer to measure run time
 		Timer timer;
+		
+		// remember time of last update for computing speed
+		double lastUpdateTime;
 		
 		// the scoring function
 		// computes score from target and output vectors
@@ -48,10 +51,13 @@ class Solver
 		Solver(IProgramFactory* factory, IVM* vm, 
 			   const std::vector<float>& target);
 
-		// todo - why is maxOps here?
-		void run(int maxOps);
+		void run();
 		
 		void stop();
 		
-		// something to do with loading / saving here?
+		// todo - load function
+		
+		void save(const std::string& fileName);
+		
+		void dumpProgramInformation(const std::vector<int>& program);
 };

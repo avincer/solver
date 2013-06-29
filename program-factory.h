@@ -38,4 +38,7 @@ class IProgramFactory
 		virtual void recordProgramScore(Program program) = 0;
 		
 		virtual void toXml(std::ostream& stream) = 0;
+		
+		// output information about a program
+		virtual void dumpProgramInformation(const std::vector<int>& program) = 0;
 };

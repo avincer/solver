@@ -3,23 +3,21 @@
 #include <iostream>
 
 ProgramTree::ProgramTree(IRandom* random, 
-			const std::vector<double>& initialChildWeights)
+			const std::vector<double>& initialChildWeights,
+			SearchStrategy searchStrategy)
 {
 	this->random = random;
 	this->initialChildWeights = initialChildWeights;
-	
-	// cache cumulative node weights for performance
-	// note: this only works because all nodes have same weighting
-	int instructionCount = initialChildWeights.size();
-	double sum = 0;
-	for(int i = 0; i < instructionCount; ++i)
-	{
-		sum += initialChildWeights[i];
-		cumInitialWeights.push_back(sum);
-	}
+	this->searchStrategy = searchStrategy;
 	
 	// note: instruction for root node is ignored
 	root = allocateNode(-1, nullptr);
+}
+
+std::string ProgramTree::getName()
+{
+	return searchStrategy == Random ? 
+		"ProgramTree(random search)" : "ProgramTree(directed search)";
 }
 
 Program ProgramTree::createNewProgram()
@@ -46,6 +44,41 @@ void ProgramTree::toXml(std::ostream& stream)
 	root->toXml(stream);
 }
 
+void ProgramTree::dumpProgramInformation(const std::vector<int>& program)
+{
+	double chance = 1;
+	auto node = root;
+	for(int i = 0; i < program.size() && node != nullptr; ++i)
+	{
+		// print sub-program path
+		for(int j = 0; j <= i; ++j)
+		{
+			std::cout << "/" << program[j];
+		}
+		
+		auto link = node->children[program[i]];
+		bool exists = link.node != nullptr;
+		std::cout << " " << (exists ? "exists" : "unexplored");
+		
+		double totalWeight = 0;
+		for(int c = 0; c < node->children.size(); ++c)
+		{
+			totalWeight += node->children[c].weight;
+		}
+		
+		double weight = link.weight;
+		double fractionalWeight = weight / totalWeight;
+		chance *= fractionalWeight;
+		
+		std::cout << " weight " << weight << " / " << totalWeight;
+		std::cout << " (" << fractionalWeight * 100 << "%)";
+		std::cout << " chance " << (long)(1.0 / chance) << ":1" << std::endl;
+		
+		node = link.node;
+	}
+	std::cout << std::endl;
+}
+
 ProgramTree::~ProgramTree()
 {
 	cleanup(root);
@@ -53,20 +86,35 @@ ProgramTree::~ProgramTree()
 
 int ProgramTree::chooseNextInstruction(Node* parent)
 {
-	double max = parent->children.back().cumWeight;
-	double x = random->getDouble(max);
-	int i = 0;
-	while(x > parent->children[i].cumWeight)
+	if(searchStrategy == Random)
 	{
-		++i;
+		return random->getInt(initialChildWeights.size());
 	}
-	return i;
+	else
+	{
+		// xxx - this should probably be cached!
+		double max = 0;
+		for(auto child : parent->children)
+		{
+			max += child.weight;
+		}
+		
+		double x = random->getDouble(max);
+		double threshold = parent->children[0].weight;
+		int i = 0;
+		while(x > threshold)
+		{
+			++i;
+			threshold += parent->children[i].weight;
+		}
+		return i;
+	}
 }
 
 Node* ProgramTree::allocateNode(int instruction, Node* parent)
 {
 	// todo - could probably do better with batch allocation
-	return new Node(instruction, parent, initialChildWeights, cumInitialWeights);
+	return new Node(instruction, parent, initialChildWeights);
 }
 
 Node* ProgramTree::createNewNode(Node* parent)
@@ -77,13 +125,6 @@ Node* ProgramTree::createNewNode(Node* parent)
 		for(auto link: parent->children)
 		{
 			std::cout << link.weight << " ";
-		}
-		std::cout << std::endl;
-		std::cout << std::endl;
-		
-		for(auto link: parent->children)
-		{
-			std::cout << link.cumWeight << " ";
 		}
 		std::cout << std::endl;
 		std::cout << std::endl;
