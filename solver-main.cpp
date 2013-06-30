@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 	std::unique_ptr<IRandom> random(new CStdRandom());
 	random->init(seed);
 	
-	std::vector<double> initialWeights(vm->getInstructionCount(), options.instructionInitialWeight);
+	std::vector<double> initialWeights(vm->supportedInstructionCount(), options.instructionInitialWeight);
 	
 	// todo - allow selecting which program factory to use
 	auto searchMethod = options.searchMethod == "directed" ? Directed : Random;

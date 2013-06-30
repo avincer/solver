@@ -91,7 +91,7 @@ void Solver::outputStatus()
 		std::cout << std::setw(0) << " | ";
 		outputSequence(program.output);
 		std::cout << "       | " << 
-			vm->formatProgram(program.instructions) << std::endl;
+            vm->returnStringForm(program.instructions) << std::endl;
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
