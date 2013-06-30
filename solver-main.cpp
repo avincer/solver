@@ -6,6 +6,7 @@
 #include <memory>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/options_description.hpp>
@@ -48,6 +49,8 @@ typedef struct
 SolverOptions;
 
 // forward declarations
+bool parseCSV(std::string csv, std::vector<float>& sequence);
+bool parseCSVFile(std::string fileName, std::vector<float>& sequence);
 bool parseOptions(int argc, char** argv, SolverOptions& options);
 void pause(int signal);
 
@@ -98,19 +101,15 @@ int main(int argc, char** argv)
 	auto searchMethod = options.searchMethod == "directed" ? Directed : Random;
 	std::unique_ptr<IProgramFactory> factory(new ProgramTree(random.get(), initialWeights, searchMethod));
 	
-	// 3x + 1
-	std::vector<float> lin { 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31 };
-
-	std::vector<float> alt { 0, 1, -2, 3, -4, 5, -6, 7, -8, 9 };
-	
-	// x^2 + x - 3
-	std::vector<float> quad1 { -3, -1, 3, 9, 17, 27, 39, 53, 69, 87, 107 };
-	
-	// x^2 + x - 6 (x in [-5, 4])
-	std::vector<float> quad2 { 14, 6, 0, -4, -6, -6, -4, 0, 6, 14 };
-	
-	// todo - get target sequence from somewhere!
-	std::vector<float> target = quad1;
+	std::vector<float> target;
+	if(!options.target.empty())
+	{
+		if(!parseCSV(options.target, target)) return 0;
+	}
+	else
+	{
+		if(!parseCSVFile(options.targetFile, target)) return 0;
+	}
 	
 	// terminate on user signal
 	signal(SIGINT, pause);
@@ -120,6 +119,34 @@ int main(int argc, char** argv)
 	solver->run();
 	
 	return 0;
+}
+
+bool parseCSV(std::string csv, std::vector<float>& sequence)
+{
+	std::istringstream ss(csv);
+	try
+	{
+		for(std::string str; std::getline(ss, str, ','); sequence.push_back(std::stof(str)));
+	}
+	catch(const std::exception& ex)
+	{
+		std::cout << "Failed to parse target sequence - " << ex.what() << std::endl;
+		return false;
+	}
+	return true;
+}
+
+bool parseCSVFile(std::string fileName, std::vector<float>& sequence)
+{
+	std::ifstream file(fileName);
+	for(std::string line; std::getline(file, line); )
+	{
+		if(line[0] != '#')
+		{
+			if(!parseCSV(line, sequence)) return false;
+		}
+	}
+	return true;
 }
 
 // parses command line options, returning true if the program should continue
@@ -136,7 +163,9 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 		("seed", po::value<int>(&options.randomSeed)->default_value(options.randomSeed), "Sets the RNG seed. -1 selects a seed at runtime.")
 		("weight", po::value<double>(&options.instructionInitialWeight)->default_value(options.instructionInitialWeight), "Sets the initial instruction weight. Should be between 0 and 1")
 		("search", po::value<std::string>(&options.searchMethod)->default_value(options.searchMethod), "Selects the search method to use. Passing list will print supported methods.")
-
+		("target", po::value<std::string>(&options.target), "Sets the target sequence.")
+		("targetFile", po::value<std::string>(&options.targetFile), "Loads the target sequence from a file.")
+		
 		("pile-up-stack-size", po::value<int>(&options.pileUpStackSize)->default_value(options.pileUpStackSize), "Sets stack size for the pile-up VM.")
 		("pile-up-memory-size", po::value<int>(&options.pileUpMemorySize)->default_value(options.pileUpMemorySize), "Sets memory size for the pile-up VM.")
 		("pile-up-max-ops", po::value<int>(&options.pileUpMaxOps)->default_value(options.pileUpMaxOps), "Sets maximum operation count for the pile-up VM.")		
@@ -186,30 +215,20 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 			else
 			{
 				// check that the selected thing is valid
-				bool found = false;
 				for(auto thing: list)
 				{
-					if(thing.first == arg)
-					{
-						found = true;
-						break;
-					}
+					if(thing.first == arg) return true;
 				}
-				if(!found)
-				{
-					std::cout << arg << " is not a valid value for " << option << std::endl;
-					return false;
-				}
+				std::cout << arg << " is not a valid value for " << option << std::endl;
+				return false;
 			}
 		}
 		return true;
 	};
 	
-	return checkListOption("vm", options.vmList);
-	return checkListOption("search", options.searchMethodList);
+	if(!checkListOption("vm", options.vmList)) return false;
+	if(!checkListOption("search", options.searchMethodList)) return false;
 
-	// todo - enable this check once target options are supported
-	/*
 	// we require exactly one of target or targetFile
 	int targetOptions = (int)(!options.target.empty()) + (int)(!options.targetFile.empty());
 	if(targetOptions != 1)
@@ -217,7 +236,7 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 		std::cout << "Please specify target sequence using --target or --targetFile (but not both!)" << std::endl;
 		return false;
 	}
-	*/
+
 	return true;
 }
 
