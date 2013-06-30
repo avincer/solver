@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <fstream>
 
-const char* Solver::version = "0.1";
+const char* Solver::version = "0.2";
 
 double Solver::computeScore(int outputLen)
 {
