@@ -1,5 +1,6 @@
 #include "solver.h"
 #include "pile-up.h"
+#include "newtable.h"
 #include "tree.h"
 
 #include <csignal>
@@ -45,6 +46,8 @@ typedef struct
 	int pileUpStackSize;
 	int pileUpMemorySize;
 	int pileUpMaxOps;
+	
+	unsigned int newtableMostRunTimePerOutput;
 }
 SolverOptions;
 
@@ -61,7 +64,8 @@ int main(int argc, char** argv)
 	
 	options.vmList = 
 	{ 
-		{ "pile-up", "virtual machine using stack based arithmetic" }
+		{ "pile-up", "virtual machine using stack based arithmetic" },
+		{ "newtable", "" }
 	};
 	
 	options.searchMethodList = 
@@ -79,6 +83,8 @@ int main(int argc, char** argv)
 	options.pileUpMemorySize = 16;
 	options.pileUpMaxOps = 1000;
 	
+	options.newtableMostRunTimePerOutput = 100;
+	
 	if(!parseOptions(argc, argv, options)) return 0;
 	
 	// todo - find windows equivalent of this
@@ -88,7 +94,15 @@ int main(int argc, char** argv)
 #endif
 	
 	// todo - allow selecting other VMs
-	std::unique_ptr<IVM> vm(new PileUp::VM(options.pileUpStackSize, options.pileUpMemorySize, options.pileUpMaxOps));
+	std::unique_ptr<IVM> vm;
+	if(options.vm == "pile-up")
+	{
+		vm.reset(new PileUp::VM(options.pileUpStackSize, options.pileUpMemorySize, options.pileUpMaxOps));
+	}
+	else
+	{
+		vm.reset(new newtAble::VM(options.newtableMostRunTimePerOutput));
+	}
 	
 	auto seed = options.randomSeed == -1 ? (int)time(nullptr) : options.randomSeed;
 	
@@ -169,6 +183,8 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 		("pile-up-stack-size", po::value<int>(&options.pileUpStackSize)->default_value(options.pileUpStackSize), "Sets stack size for the pile-up VM.")
 		("pile-up-memory-size", po::value<int>(&options.pileUpMemorySize)->default_value(options.pileUpMemorySize), "Sets memory size for the pile-up VM.")
 		("pile-up-max-ops", po::value<int>(&options.pileUpMaxOps)->default_value(options.pileUpMaxOps), "Sets maximum operation count for the pile-up VM.")		
+
+		("newtable-most-run-time-per-output", po::value<unsigned int>(&options.newtableMostRunTimePerOutput)->default_value(options.newtableMostRunTimePerOutput), "Sets most run time per output.")		
 		;
 	
 	po::variables_map args;
