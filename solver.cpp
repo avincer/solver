@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <fstream>
 
+const char* Solver::version = "0.1";
+
 double Solver::computeScore(int outputLen)
 {
 	// todo - consider whether factoring in the length of the 

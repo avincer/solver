@@ -8,8 +8,6 @@
 class Solver
 {
 	private:
-		const char* version = "0.1";
-		
 		// how many of the best programs to display
 		const int bestProgramCount = 10;
 		
@@ -48,6 +46,9 @@ class Solver
 		void outputSequence(const std::vector<float>& sequence);
 	
 	public:
+		// app version, defined in solver.cpp
+		static const char* version;
+		
 		Solver(IProgramFactory* factory, IVM* vm, 
 			   const std::vector<float>& target);
 

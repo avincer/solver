@@ -7,6 +7,10 @@
 #include <iostream>
 #include <sstream>
 
+#include <boost/program_options/variables_map.hpp>
+#include <boost/program_options/options_description.hpp>
+#include <boost/program_options/parsers.hpp>
+
 // os specific headers
 // note: can dump preprocessor macros for gcc using gcc -dM -E - < /dev/null
 // gcc defines linux, __linux and __linux__
@@ -18,31 +22,81 @@
 
 std::unique_ptr<Solver> solver;
 
+// storage for program options and capabilities
+typedef struct
+{
+	// capabilities (name -> description)
+	std::map<std::string, std::string> vmList;
+	std::map<std::string, std::string> searchMethodList;
+	
+	// program settings
+	std::string vm;
+	int randomSeed;
+	
+	// todo - add support for setting individual instruction weights
+	double instructionInitialWeight;
+	
+	std::string searchMethod;
+	std::string target;
+	std::string targetFile;
+	
+	// vm specific settings
+	int pileUpStackSize;
+	int pileUpMemorySize;
+	int pileUpMaxOps;
+}
+SolverOptions;
+
+// forward declarations
+bool parseOptions(int argc, char** argv, SolverOptions& options);
 void pause(int signal);
 
-int main()
+int main(int argc, char** argv)
 {
+	// set option defaults
+	SolverOptions options;
+	
+	options.vmList = 
+	{ 
+		{ "pile-up", "virtual machine using stack based arithmetic" }
+	};
+	
+	options.searchMethodList = 
+	{ 
+		{ "directed", "generate programs based on the performance of previously run programs" },
+		{ "random", "generate programs at random" }
+	};
+	
+	options.vm = "pile-up";
+	options.randomSeed = -1;
+	options.instructionInitialWeight = 0.5;
+	options.searchMethod = "directed";
+
+	options.pileUpStackSize = 16;
+	options.pileUpMemorySize = 16;
+	options.pileUpMaxOps = 1000;
+	
+	if(!parseOptions(argc, argv, options)) return 0;
+	
 	// todo - find windows equivalent of this
 #ifdef __linux
 	// throw on floating point exceptions
 	feenableexcept(FE_INVALID | FE_OVERFLOW);
 #endif
 	
-	// todo - allow selection of the VM (and options)
-	int stackSize = 16, memorySize = 16, maxOps = 1000;
-	std::unique_ptr<IVM> vm(new PileUp::VM(stackSize, memorySize, maxOps));
+	// todo - allow selecting other VMs
+	std::unique_ptr<IVM> vm(new PileUp::VM(options.pileUpStackSize, options.pileUpMemorySize, options.pileUpMaxOps));
 	
-	// todo - allow selection of random seed?
-	auto seed = (int)time(nullptr);
+	auto seed = options.randomSeed == -1 ? (int)time(nullptr) : options.randomSeed;
 	
 	std::unique_ptr<IRandom> random(new CStdRandom());
 	random->init(seed);
 	
-	// todo - allow setting initial weights
-	std::vector<double> initialWeights(vm->getInstructionCount(), 0.5);
+	std::vector<double> initialWeights(vm->getInstructionCount(), options.instructionInitialWeight);
 	
 	// todo - allow selecting which program factory to use
-	std::unique_ptr<IProgramFactory> factory(new ProgramTree(random.get(), initialWeights, Directed));
+	auto searchMethod = options.searchMethod == "directed" ? Directed : Random;
+	std::unique_ptr<IProgramFactory> factory(new ProgramTree(random.get(), initialWeights, searchMethod));
 	
 	// 3x + 1
 	std::vector<float> lin { 1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31 };
@@ -66,6 +120,105 @@ int main()
 	solver->run();
 	
 	return 0;
+}
+
+// parses command line options, returning true if the program should continue
+bool parseOptions(int argc, char** argv, SolverOptions& options)
+{
+	namespace po = boost::program_options;
+	
+	po::options_description optionList("Solver options");
+	optionList.add_options()
+		("help", "Print this message.")
+		("version", "Print program version.")
+		
+		("vm", po::value<std::string>(&options.vm)->default_value(options.vm), "Selects the virtual machine to use. Passing list will print supported VMs.")
+		("seed", po::value<int>(&options.randomSeed)->default_value(options.randomSeed), "Sets the RNG seed. -1 selects a seed at runtime.")
+		("weight", po::value<double>(&options.instructionInitialWeight)->default_value(options.instructionInitialWeight), "Sets the initial instruction weight. Should be between 0 and 1")
+		("search", po::value<std::string>(&options.searchMethod)->default_value(options.searchMethod), "Selects the search method to use. Passing list will print supported methods.")
+
+		("pile-up-stack-size", po::value<int>(&options.pileUpStackSize)->default_value(options.pileUpStackSize), "Sets stack size for the pile-up VM.")
+		("pile-up-memory-size", po::value<int>(&options.pileUpMemorySize)->default_value(options.pileUpMemorySize), "Sets memory size for the pile-up VM.")
+		("pile-up-max-ops", po::value<int>(&options.pileUpMaxOps)->default_value(options.pileUpMaxOps), "Sets maximum operation count for the pile-up VM.")		
+		;
+	
+	po::variables_map args;
+
+	try
+	{
+		po::store(po::parse_command_line(argc, argv, optionList), args);
+	}
+	catch(const std::exception& ex)
+	{
+		std::cout << ex.what() << std::endl;
+		return false;
+	}
+	
+	// maybe this has something to do with checking args?
+	po::notify(args);
+	
+	if (args.count("help"))
+	{
+		std::cout << optionList << std::endl;
+		return false;
+	}
+	
+	if (args.count("version"))
+	{
+		std::cout << "Solver v" << Solver::version << std::endl;
+		return false;
+	}
+	
+	auto checkListOption = [&args](std::string option, std::map<std::string, std::string> list)
+	{
+		if(args.count(option))
+		{
+			auto arg = args[option].as<std::string>();
+			if(arg == "list")
+			{
+				// list the things we support
+				for(auto thing: list)
+				{
+					std::cout << thing.first << " : " << thing.second << std::endl;
+				}
+				return false;
+			}
+			else
+			{
+				// check that the selected thing is valid
+				bool found = false;
+				for(auto thing: list)
+				{
+					if(thing.first == arg)
+					{
+						found = true;
+						break;
+					}
+				}
+				if(!found)
+				{
+					std::cout << arg << " is not a valid value for " << option << std::endl;
+					return false;
+				}
+			}
+		}
+		return true;
+	};
+	
+	return checkListOption("vm", options.vmList);
+	return checkListOption("search", options.searchMethodList);
+
+	// todo - enable this check once target options are supported
+	/*
+	// we require exactly one of target or targetFile
+	int targetOptions = (int)(!options.target.empty()) + (int)(!options.targetFile.empty());
+	if(targetOptions != 1)
+	{
+		std::cout << "Please specify target sequence using --target or --targetFile (but not both!)" << std::endl;
+		return false;
+	}
+	*/
+	return true;
 }
 
 void pause(int signal)
