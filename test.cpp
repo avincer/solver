@@ -113,7 +113,7 @@ void testInstructionSelection()
 	
 	CStdRandom random;
 	random.init(1337);
-	ProgramTree tree(&random, weights);
+	ProgramTree tree(&random, weights, Directed);
 	auto node = (Node*)tree.createNewProgram().node;
 	
 	for(int i = 0; i < 1000; ++i)
