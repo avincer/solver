@@ -58,7 +58,14 @@ void ProgramTree::dumpProgramInformation(const std::vector<int>& program)
 		
 		auto link = node->children[program[i]];
 		bool exists = link.node != nullptr;
-		std::cout << " " << (exists ? "exists" : "unexplored");
+		if(exists)
+		{
+			std::cout << " exists with score " << link.node->score;
+		}
+		else
+		{
+			std::cout << " unexplored";
+		}
 		
 		double totalWeight = 0;
 		for(int c = 0; c < node->children.size(); ++c)

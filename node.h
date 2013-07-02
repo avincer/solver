@@ -33,9 +33,6 @@ class Node
 		// number of descendants
 		int totalDescendantCount;
 		
-		// score for this program only
-		double score;
-		
 		// score for all descendants
 		double totalDescendantScore;
 		
@@ -46,6 +43,9 @@ class Node
 		void updateStats(double newScore, int childInstruction, double childWeight);
 		
 	public:
+		// score for this program only
+		double score;
+		
 		// direct descendants of this node
 		// note: public to allow program tree to choose children by weight
 		std::vector<NodeLink> children;

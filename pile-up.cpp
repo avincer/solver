@@ -84,6 +84,12 @@ std::string VM::returnStringForm(const std::vector<int>& program)
 	{
 		result << translateInstruction((Instruction)instruction) << " ";
 	}
+	result << '(';
+	for(int instruction: program)
+	{
+		result << '/' << instruction;
+	}
+	result << ')';
 	return result.str();
 }
 
