@@ -160,10 +160,9 @@ namespace newtAble
 				case 7:
 					if(runTime_code_output)
 						last_runTime_code_p += "output @p1";
-					output = new float(
-						code_runTime_copy[
+					*output = code_runTime_copy[
 							code_runTime_copy[code_pos]
-							% code_runTime_size]);
+							% code_runTime_size];
 					code_pos++;
 					cont = false;
 				break;
