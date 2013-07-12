@@ -23,8 +23,6 @@ namespace newtAble
 
 			std::string getLastError();
 
-			std::vector<int>& getCodeReadOnly();
-
 			bool runTime_code_output;
 
 			bool run(float seed, float* output);

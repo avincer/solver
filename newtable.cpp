@@ -50,9 +50,6 @@ namespace newtAble
 	std::string VM::getLastError() {
 		return last_error;}
 
-	std::vector<int>& VM::getCodeReadOnly() {
-		return code;}
-
 	bool VM::run(float seed, float* output)
 	{
 		bool cont = true,
