@@ -62,17 +62,11 @@ int main(int argc, char** argv)
 	// set option defaults
 	SolverOptions options;
 	
-	options.vmList = 
-	{ 
-		{ "pile-up", "virtual machine using stack based arithmetic" },
-		{ "newtable", "" }
-	};
+	options.vmList.insert(std::make_pair("pile-up", "virtual machine using stack based arithmetic"));
+	options.vmList.insert(std::make_pair("newtable", ""));
 	
-	options.searchMethodList = 
-	{ 
-		{ "directed", "generate programs based on the performance of previously run programs" },
-		{ "random", "generate programs at random" }
-	};
+	options.searchMethodList.insert(std::make_pair("directed", "generate programs based on the performance of previously run programs"));
+	options.searchMethodList.insert(std::make_pair("random", "generate programs at random"));
 	
 	options.vm = "pile-up";
 	options.randomSeed = -1;

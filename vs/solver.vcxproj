@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{676502F5-6271-4D52-8140-DBA89D30FCAF}</ProjectGuid>
+    <RootNamespace>solver</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);C:\Users\Andrew\Documents\code\boost_1_53_0;</IncludePath>
+    <LibraryPath>$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(WindowsSDK_LibraryPath_x64);C:\Users\Andrew\Documents\code\boost_1_53_0\stage\lib;</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\math-stack.cpp" />
+    <ClCompile Include="..\newtable.cpp" />
+    <ClCompile Include="..\node.cpp" />
+    <ClCompile Include="..\pile-up.cpp" />
+    <ClCompile Include="..\result.cpp" />
+    <ClCompile Include="..\solver-main.cpp" />
+    <ClCompile Include="..\solver.cpp" />
+    <ClCompile Include="..\tree.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ivm.h" />
+    <ClInclude Include="..\math-stack.h" />
+    <ClInclude Include="..\newtable.h" />
+    <ClInclude Include="..\node.h" />
+    <ClInclude Include="..\pile-up.h" />
+    <ClInclude Include="..\program-factory.h" />
+    <ClInclude Include="..\random.h" />
+    <ClInclude Include="..\result.h" />
+    <ClInclude Include="..\solver.h" />
+    <ClInclude Include="..\timer.h" />
+    <ClInclude Include="..\tree.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
