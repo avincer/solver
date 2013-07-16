@@ -1,13 +1,14 @@
 #include "solver.h"
 #include "pile-up.h"
 #include "newtable.h"
-#include "tree.h"
+#include "append-factory.h"
 
 #include <csignal>
 #include <memory>
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <map>
 
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/options_description.hpp>
@@ -107,7 +108,7 @@ int main(int argc, char** argv)
 	
 	// todo - allow selecting which program factory to use
 	auto searchMethod = options.searchMethod == "directed" ? Directed : Random;
-	std::unique_ptr<IProgramFactory> factory(new ProgramTree(random.get(), initialWeights, searchMethod));
+	std::unique_ptr<IProgramFactory> factory(new AppendFactory(random.get(), initialWeights, searchMethod));
 	
 	std::vector<float> target;
 	if(!options.target.empty())

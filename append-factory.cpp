@@ -1,8 +1,8 @@
-#include "tree.h"
+#include "append-factory.h"
 
 #include <iostream>
 
-ProgramTree::ProgramTree(IRandom* random, 
+AppendFactory::AppendFactory(IRandom* random, 
 			const std::vector<double>& initialChildWeights,
 			SearchStrategy searchStrategy)
 {
@@ -14,13 +14,13 @@ ProgramTree::ProgramTree(IRandom* random,
 	root = allocateNode(-1, nullptr);
 }
 
-std::string ProgramTree::getName()
+std::string AppendFactory::getName()
 {
 	return searchStrategy == Random ? 
-		"ProgramTree(random search)" : "ProgramTree(directed search)";
+		"AppendFactory(random search)" : "AppendFactory(directed search)";
 }
 
-Program ProgramTree::createNewProgram()
+Program AppendFactory::createNewProgram()
 {
 	// note: the intention here is to clear the vector but retain allocated memory
 	// freeing and reallocating is a waste of time
@@ -32,19 +32,19 @@ Program ProgramTree::createNewProgram()
 	return p;
 }
 
-void ProgramTree::recordProgramScore(Program program)
+void AppendFactory::recordProgramScore(Program program)
 {
 	auto node = (Node*)program.node;
 	node->setScore(program.score);
 }
 
-void ProgramTree::toXml(std::ostream& stream)
+void AppendFactory::toXml(std::ostream& stream)
 {
 	stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << std::endl;
 	root->toXml(stream);
 }
 
-void ProgramTree::dumpProgramInformation(const std::vector<int>& program)
+void AppendFactory::dumpProgramInformation(const std::vector<int>& program)
 {
 	double chance = 1;
 	auto node = root;
@@ -86,12 +86,12 @@ void ProgramTree::dumpProgramInformation(const std::vector<int>& program)
 	std::cout << std::endl;
 }
 
-ProgramTree::~ProgramTree()
+AppendFactory::~AppendFactory()
 {
 	cleanup(root);
 }
 
-int ProgramTree::chooseNextInstruction(Node* parent)
+int AppendFactory::chooseNextInstruction(Node* parent)
 {
 	if(searchStrategy == Random)
 	{
@@ -118,13 +118,13 @@ int ProgramTree::chooseNextInstruction(Node* parent)
 	}
 }
 
-Node* ProgramTree::allocateNode(int instruction, Node* parent)
+Node* AppendFactory::allocateNode(int instruction, Node* parent)
 {
 	// todo - could probably do better with batch allocation
 	return new Node(instruction, parent, initialChildWeights);
 }
 
-Node* ProgramTree::createNewNode(Node* parent)
+Node* AppendFactory::createNewNode(Node* parent)
 {
 	// debug weights
 	if(false)
@@ -153,7 +153,7 @@ Node* ProgramTree::createNewNode(Node* parent)
 	}
 }
 
-void ProgramTree::cleanup(Node* node)
+void AppendFactory::cleanup(Node* node)
 {
 	for(auto link: node->children)
 	{

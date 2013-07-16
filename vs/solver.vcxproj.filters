@@ -36,7 +36,7 @@
     <ClCompile Include="..\solver-main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\tree.cpp">
+    <ClCompile Include="..\append-factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,7 +71,7 @@
     <ClInclude Include="..\timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\tree.h">
+    <ClInclude Include="..\append-factory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

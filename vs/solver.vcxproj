@@ -42,7 +42,7 @@
     <ClCompile Include="..\result.cpp" />
     <ClCompile Include="..\solver-main.cpp" />
     <ClCompile Include="..\solver.cpp" />
-    <ClCompile Include="..\tree.cpp" />
+    <ClCompile Include="..\append-factory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ivm.h" />
@@ -55,7 +55,7 @@
     <ClInclude Include="..\result.h" />
     <ClInclude Include="..\solver.h" />
     <ClInclude Include="..\timer.h" />
-    <ClInclude Include="..\tree.h" />
+    <ClInclude Include="..\append-factory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
