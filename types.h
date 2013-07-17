@@ -1,3 +1,3 @@
 #include <vector>
 
-typedef std::vector<int> Program;
+typedef std::vector<unsigned char> Program;
