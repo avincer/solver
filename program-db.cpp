@@ -1,11 +1,12 @@
 #include "program-db.h"
 
-void SetProgramDB::storeProgram(const std::vector<int>& program)
+void SetProgramDB::storeProgram(const Program& program)
 {
-	programs.emplace(program);
+	//programs.emplace(program);
 }
 
-bool SetProgramDB::findProgram(const std::vector<int>& program)
+bool SetProgramDB::findProgram(const Program& program)
 {
-	return programs.count(program);
+	return true;
+	//return programs.count(program);
 }

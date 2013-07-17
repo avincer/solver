@@ -13,16 +13,16 @@ std::string RandomFactory::getName()
 }
 
 // returns a new program
-Program RandomFactory::createNewProgram()
+ProgramInfo RandomFactory::createNewProgram()
 {
-	instructions.clear();
+	program.clear();
 	do
 	{
-		instructions.push_back(random->getInt(instructionCount));
+		program.push_back(random->getInt(instructionCount));
 	}
-	while(db->findProgram(instructions));
-	db->storeProgram(instructions);
-	Program program;
-	program.instructions = instructions;
-	return program;
+	while(db->findProgram(program));
+	db->storeProgram(program);
+	ProgramInfo programInfo;
+	programInfo.program = program;
+	return programInfo;
 }

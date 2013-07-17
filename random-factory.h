@@ -10,7 +10,7 @@ class RandomFactory : public IProgramFactory
 		IRandom* random;
 		int instructionCount;
 		std::unique_ptr<IProgramDB> db;
-		std::vector<int> instructions;
+		Program program;
 
 	public:
 		RandomFactory(IRandom* random, int instructionCount);
@@ -18,14 +18,14 @@ class RandomFactory : public IProgramFactory
 		std::string getName();
 
 		// returns a new program
-		Program createNewProgram();
+		ProgramInfo createNewProgram();
 
 		// no-op for this factory
-		void recordProgramScore(Program program) {}
+		void recordProgramScore(ProgramInfo program) {}
 
 		// review - do we need this?
 		void toXml(std::ostream& stream) {}
 
 		// nothing interesting to output
-		void dumpProgramInformation(const std::vector<int>& program) {}
+		void dumpProgramInformation(const Program& program) {}
 };

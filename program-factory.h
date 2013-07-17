@@ -1,14 +1,15 @@
 #pragma once
 
+#include "types.h"
+
 #include <vector>
 #include <string>
 #include <ostream>
 
-// a program
 typedef struct
 {
-	// program instructions
-	std::vector<int> instructions;
+	// the program
+	Program program;
 	
 	// score for this program
 	double score;
@@ -19,7 +20,7 @@ typedef struct
 	// node that represents this program (used by program factory)
 	void* node;
 }
-Program;
+ProgramInfo;
 
 // program factory interface
 // program factories are responsible for intelligently creating new 
@@ -31,14 +32,14 @@ class IProgramFactory
 		virtual std::string getName() = 0;
 		
 		// returns a new program
-		virtual Program createNewProgram() = 0;
+		virtual ProgramInfo createNewProgram() = 0;
 		
 		// updates internal statistics with the score for this program
 		// note: requires program.score to be set!
-		virtual void recordProgramScore(Program program) = 0;
+		virtual void recordProgramScore(ProgramInfo program) = 0;
 		
 		virtual void toXml(std::ostream& stream) = 0;
 		
 		// output information about a program
-		virtual void dumpProgramInformation(const std::vector<int>& program) = 0;
+		virtual void dumpProgramInformation(const Program& program) = 0;
 };

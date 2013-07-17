@@ -18,12 +18,12 @@ namespace newtAble
 		return 11;}
 
 	void VM::loadProgram(
-		const std::vector<int>& program) {
+		const Program& program) {
 		code = program;
 		reset();}
 
 	std::string VM::returnStringForm(
-		const std::vector<int>& program)
+		const Program& program)
 	{
 		std::string str;
 		auto code_length = program.size();

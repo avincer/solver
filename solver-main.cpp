@@ -292,7 +292,7 @@ void pause(int signal)
 					std::string programPath, temp;
 					std::cin >> programPath;
 					std::istringstream ss(programPath);
-					std::vector<int> program;
+					Program program;
 					while(std::getline(ss, temp, '/'))
 					{
 						//std::cout << "'" << temp << "'" << std::endl;

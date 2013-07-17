@@ -15,7 +15,7 @@ class Solver
 		static const int updatePeriod = 100000;
 		
 		// the best programs so far, ordered by score (best first)
-		std::list<Program> bestPrograms;
+		std::list<ProgramInfo> bestPrograms;
 		
 		// factory and vm to be used
 		IProgramFactory* factory;
@@ -39,7 +39,7 @@ class Solver
 		double computeScore(int outputLen);
 		
 		// updates the list of best programs with program
-		void updateBestPrograms(Program& program, int outputLen);
+		void updateBestPrograms(ProgramInfo& program, int outputLen);
 		
 		void outputStatus();
 		
@@ -60,5 +60,5 @@ class Solver
 		
 		void save(const std::string& fileName);
 		
-		void dumpProgramInformation(const std::vector<int>& program);
+		void dumpProgramInformation(const Program& program);
 };

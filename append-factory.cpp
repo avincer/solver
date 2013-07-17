@@ -20,19 +20,19 @@ std::string AppendFactory::getName()
 		"AppendFactory(random search)" : "AppendFactory(directed search)";
 }
 
-Program AppendFactory::createNewProgram()
+ProgramInfo AppendFactory::createNewProgram()
 {
 	// note: the intention here is to clear the vector but retain allocated memory
 	// freeing and reallocating is a waste of time
 	currentProgram.clear();
 	
-	Program p;
+	ProgramInfo p;
 	p.node = createNewNode(root);
-	p.instructions = currentProgram;
+	p.program = currentProgram;
 	return p;
 }
 
-void AppendFactory::recordProgramScore(Program program)
+void AppendFactory::recordProgramScore(ProgramInfo program)
 {
 	auto node = (Node*)program.node;
 	node->setScore(program.score);
@@ -44,7 +44,7 @@ void AppendFactory::toXml(std::ostream& stream)
 	root->toXml(stream);
 }
 
-void AppendFactory::dumpProgramInformation(const std::vector<int>& program)
+void AppendFactory::dumpProgramInformation(const Program& program)
 {
 	double chance = 1;
 	auto node = root;

@@ -69,7 +69,7 @@ int VM::supportedInstructionCount()
 	return InstructionCount;
 }
 
-void VM::loadProgram(const std::vector<int>& program)
+void VM::loadProgram(const Program& program)
 {
 	this->program = program;
 	
@@ -77,7 +77,7 @@ void VM::loadProgram(const std::vector<int>& program)
 	memset(memory, 0, memorySize * sizeof(float));
 }
 
-std::string VM::returnStringForm(const std::vector<int>& program)
+std::string VM::returnStringForm(const Program& program)
 {
 	std::ostringstream result;
 	for(int instruction: program)
