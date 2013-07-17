@@ -251,6 +251,7 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 	};
 	
 	if(!checkListOption("vm", options.vmList)) return false;
+	if(!checkListOption("factory", options.factoryList)) return false;
 	if(!checkListOption("search", options.searchMethodList)) return false;
 
 	// we require exactly one of target or targetFile
