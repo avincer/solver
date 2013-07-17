@@ -2,6 +2,7 @@
 #include "pile-up.h"
 #include "newtable.h"
 #include "append-factory.h"
+#include "random-factory.h"
 
 #include <csignal>
 #include <memory>
@@ -30,10 +31,12 @@ typedef struct
 {
 	// capabilities (name -> description)
 	std::map<std::string, std::string> vmList;
+	std::map<std::string, std::string> factoryList;
 	std::map<std::string, std::string> searchMethodList;
-	
+
 	// program settings
 	std::string vm;
+	std::string factory;
 	int randomSeed;
 	
 	// todo - add support for setting individual instruction weights
@@ -63,13 +66,17 @@ int main(int argc, char** argv)
 	// set option defaults
 	SolverOptions options;
 	
-	options.vmList.insert(std::make_pair("pile-up", "virtual machine using stack based arithmetic"));
-	options.vmList.insert(std::make_pair("newtable", ""));
+	options.vmList.emplace("pile-up", "virtual machine using stack based arithmetic");
+	options.vmList.emplace("newtable", "");
+
+	options.factoryList.emplace("append", "Monte Carlo tree search (append instruction mode)");
+	options.factoryList.emplace("random", "Random program generation");
 	
-	options.searchMethodList.insert(std::make_pair("directed", "generate programs based on the performance of previously run programs"));
-	options.searchMethodList.insert(std::make_pair("random", "generate programs at random"));
+	options.searchMethodList.emplace("directed", "generate programs based on the performance of previously run programs");
+	options.searchMethodList.emplace("random", "generate programs at random");
 	
 	options.vm = "pile-up";
+	options.factory = "append";
 	options.randomSeed = -1;
 	options.instructionInitialWeight = 0.5;
 	options.searchMethod = "directed";
@@ -88,7 +95,6 @@ int main(int argc, char** argv)
 	feenableexcept(FE_INVALID | FE_OVERFLOW);
 #endif
 	
-	// todo - allow selecting other VMs
 	std::unique_ptr<IVM> vm;
 	if(options.vm == "pile-up")
 	{
@@ -103,13 +109,19 @@ int main(int argc, char** argv)
 	
 	std::unique_ptr<IRandom> random(new CStdRandom());
 	random->init(seed);
-	
-	std::vector<double> initialWeights(vm->supportedInstructionCount(), options.instructionInitialWeight);
-	
-	// todo - allow selecting which program factory to use
-	auto searchMethod = options.searchMethod == "directed" ? Directed : Random;
-	std::unique_ptr<IProgramFactory> factory(new AppendFactory(random.get(), initialWeights, searchMethod));
-	
+		
+	std::unique_ptr<IProgramFactory> factory;
+	if(options.factory == "append")
+	{
+		std::vector<double> initialWeights(vm->supportedInstructionCount(), options.instructionInitialWeight);
+		auto searchMethod = options.searchMethod == "directed" ? Directed : Random;
+		factory.reset(new AppendFactory(random.get(), initialWeights, searchMethod));
+	}
+	else
+	{
+		factory.reset(new RandomFactory(random.get(), vm->supportedInstructionCount()));
+	}
+
 	std::vector<float> target;
 	if(!options.target.empty())
 	{
@@ -169,6 +181,7 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 		("version", "Print program version.")
 		
 		("vm", po::value<std::string>(&options.vm)->default_value(options.vm), "Selects the virtual machine to use. Passing list will print supported VMs.")
+		("factory", po::value<std::string>(&options.factory)->default_value(options.factory), "Selects the program factory to use. Passing list will print supported factories.")
 		("seed", po::value<int>(&options.randomSeed)->default_value(options.randomSeed), "Sets the RNG seed. -1 selects a seed at runtime.")
 		("weight", po::value<double>(&options.instructionInitialWeight)->default_value(options.instructionInitialWeight), "Sets the initial instruction weight. Should be between 0 and 1")
 		("search", po::value<std::string>(&options.searchMethod)->default_value(options.searchMethod), "Selects the search method to use. Passing list will print supported methods.")

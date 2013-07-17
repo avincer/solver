@@ -39,6 +39,8 @@
     <ClCompile Include="..\newtable.cpp" />
     <ClCompile Include="..\node.cpp" />
     <ClCompile Include="..\pile-up.cpp" />
+    <ClCompile Include="..\program-db.cpp" />
+    <ClCompile Include="..\random-factory.cpp" />
     <ClCompile Include="..\result.cpp" />
     <ClCompile Include="..\solver-main.cpp" />
     <ClCompile Include="..\solver.cpp" />
@@ -50,7 +52,9 @@
     <ClInclude Include="..\newtable.h" />
     <ClInclude Include="..\node.h" />
     <ClInclude Include="..\pile-up.h" />
+    <ClInclude Include="..\program-db.h" />
     <ClInclude Include="..\program-factory.h" />
+    <ClInclude Include="..\random-factory.h" />
     <ClInclude Include="..\random.h" />
     <ClInclude Include="..\result.h" />
     <ClInclude Include="..\solver.h" />
