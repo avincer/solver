@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <unordered_set>
+#include <boost/functional/hash.hpp>
 
 class IProgramDB
 {
@@ -11,8 +12,8 @@ class IProgramDB
 		virtual bool findProgram(const Program& program) = 0;
 };
 
-// c++ doesn't provide a hash function for std::vector of anything, so we implement one here
-// _Hash_seq is an FNV-1a hash function used internally for other types, including strings
+// c++ doesn't provide a hash function for std::vector of anything except bool
+// this declaration adds a specialization of the hash function for Program
 namespace std
 {
 	template <>
@@ -20,7 +21,7 @@ namespace std
 	{
 		size_t operator()(const Program & t) const
 		{
-			return _Hash_seq(t.data(), t.size());
+			return boost::hash_range(t.begin(), t.end());
 		}
 	};
 }

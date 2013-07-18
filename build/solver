@@ -1,2 +1,2 @@
 #!/bin/bash
-g++ --std=c++11 -O2 solver-main.cpp solver.cpp tree.cpp node.cpp pile-up.cpp newtable.cpp math-stack.cpp result.cpp -lboost_program_options -o run/solver
+g++ --std=c++11 -g -O2 solver-main.cpp solver.cpp append-factory.cpp random-factory.cpp program-db.cpp node.cpp pile-up.cpp newtable.cpp math-stack.cpp result.cpp -lboost_program_options -o run/solver

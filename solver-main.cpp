@@ -137,7 +137,7 @@ int main(int argc, char** argv)
 	
 	// build and run the solver (go put the kettle on...)
 	solver.reset(new Solver(factory.get(), vm.get(), target));
-	solver->run(10000000);
+	solver->run(3000000);
 	
 	return 0;
 }
@@ -186,7 +186,7 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 		("weight", po::value<double>(&options.instructionInitialWeight)->default_value(options.instructionInitialWeight), "Sets the initial instruction weight. Should be between 0 and 1")
 		("search", po::value<std::string>(&options.searchMethod)->default_value(options.searchMethod), "Selects the search method to use. Passing list will print supported methods.")
 		("target", po::value<std::string>(&options.target), "Sets the target sequence.")
-		("targetFile", po::value<std::string>(&options.targetFile), "Loads the target sequence from a file.")
+		("target-file", po::value<std::string>(&options.targetFile), "Loads the target sequence from a file.")
 		
 		("pile-up-stack-size", po::value<int>(&options.pileUpStackSize)->default_value(options.pileUpStackSize), "Sets stack size for the pile-up VM.")
 		("pile-up-memory-size", po::value<int>(&options.pileUpMemorySize)->default_value(options.pileUpMemorySize), "Sets memory size for the pile-up VM.")
@@ -258,7 +258,7 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 	int targetOptions = (int)(!options.target.empty()) + (int)(!options.targetFile.empty());
 	if(targetOptions != 1)
 	{
-		std::cout << "Please specify target sequence using --target or --targetFile (but not both!)" << std::endl;
+		std::cout << "Please specify target sequence using --target or --target-file (but not both!)" << std::endl;
 		return false;
 	}
 
