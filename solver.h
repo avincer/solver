@@ -25,7 +25,7 @@ class Solver
 		std::vector<float> target, output;
 
 		// status
-		int programCount;
+		size_t programCount;
 		bool running;
 		
 		// use a timer to measure run time
@@ -52,7 +52,7 @@ class Solver
 		Solver(IProgramFactory* factory, IVM* vm, 
 			   const std::vector<float>& target);
 
-		void run();
+		void run(size_t maxPrograms);
 		
 		void stop();
 		
