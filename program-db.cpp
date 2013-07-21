@@ -7,5 +7,5 @@ void SetProgramDB::storeProgram(const Program& program)
 
 bool SetProgramDB::findProgram(const Program& program)
 {
-	return programs.count(program);
+	return programs.find(program) != programs.end();
 }

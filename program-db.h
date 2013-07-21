@@ -1,6 +1,5 @@
 #include "types.h"
 
-#include <vector>
 #include <unordered_set>
 #include <boost/functional/hash.hpp>
 
@@ -19,9 +18,9 @@ namespace std
 	template <>
 	struct hash<Program>
 	{
-		size_t operator()(const Program & t) const
+		size_t operator()(const Program& program) const
 		{
-			return boost::hash_range(t.begin(), t.end());
+			return boost::hash_range(program.begin(), program.end());
 		}
 	};
 }
