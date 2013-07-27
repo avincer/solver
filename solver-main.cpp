@@ -32,7 +32,6 @@ typedef struct
 	// capabilities (name -> description)
 	std::map<std::string, std::string> vmList;
 	std::map<std::string, std::string> factoryList;
-	std::map<std::string, std::string> searchMethodList;
 
 	// program settings
 	std::string vm;
@@ -42,7 +41,6 @@ typedef struct
 	// todo - add support for setting individual instruction weights
 	double instructionInitialWeight;
 	
-	std::string searchMethod;
 	std::string target;
 	std::string targetFile;
 	
@@ -72,14 +70,10 @@ int main(int argc, char** argv)
 	options.factoryList.emplace("append", "Monte Carlo tree search (append instruction mode)");
 	options.factoryList.emplace("random", "Random program generation");
 	
-	options.searchMethodList.emplace("directed", "generate programs based on the performance of previously run programs");
-	options.searchMethodList.emplace("random", "generate programs at random");
-	
 	options.vm = "pile-up";
 	options.factory = "append";
 	options.randomSeed = -1;
 	options.instructionInitialWeight = 0.5;
-	options.searchMethod = "directed";
 
 	options.pileUpStackSize = 16;
 	options.pileUpMemorySize = 16;
@@ -114,8 +108,7 @@ int main(int argc, char** argv)
 	if(options.factory == "append")
 	{
 		std::vector<double> initialWeights(vm->supportedInstructionCount(), options.instructionInitialWeight);
-		auto searchMethod = options.searchMethod == "directed" ? Directed : Random;
-		factory.reset(new AppendFactory(random.get(), initialWeights, searchMethod));
+		factory.reset(new AppendFactory(random.get(), initialWeights));
 	}
 	else
 	{
@@ -184,7 +177,6 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 		("factory", po::value<std::string>(&options.factory)->default_value(options.factory), "Selects the program factory to use. Passing list will print supported factories.")
 		("seed", po::value<int>(&options.randomSeed)->default_value(options.randomSeed), "Sets the RNG seed. -1 selects a seed at runtime.")
 		("weight", po::value<double>(&options.instructionInitialWeight)->default_value(options.instructionInitialWeight), "Sets the initial instruction weight. Should be between 0 and 1")
-		("search", po::value<std::string>(&options.searchMethod)->default_value(options.searchMethod), "Selects the search method to use. Passing list will print supported methods.")
 		("target", po::value<std::string>(&options.target), "Sets the target sequence.")
 		("target-file", po::value<std::string>(&options.targetFile), "Loads the target sequence from a file.")
 		
@@ -252,7 +244,6 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 	
 	if(!checkListOption("vm", options.vmList)) return false;
 	if(!checkListOption("factory", options.factoryList)) return false;
-	if(!checkListOption("search", options.searchMethodList)) return false;
 
 	// we require exactly one of target or targetFile
 	int targetOptions = (int)(!options.target.empty()) + (int)(!options.targetFile.empty());

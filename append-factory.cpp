@@ -3,12 +3,10 @@
 #include <iostream>
 
 AppendFactory::AppendFactory(IRandom* random, 
-			const std::vector<double>& initialChildWeights,
-			SearchStrategy searchStrategy)
+			const std::vector<double>& initialChildWeights)
 {
 	this->random = random;
 	this->initialChildWeights = initialChildWeights;
-	this->searchStrategy = searchStrategy;
 	
 	// note: instruction for root node is ignored
 	root = allocateNode(-1, nullptr);
@@ -16,8 +14,7 @@ AppendFactory::AppendFactory(IRandom* random,
 
 std::string AppendFactory::getName()
 {
-	return searchStrategy == Random ? 
-		"AppendFactory(random search)" : "AppendFactory(directed search)";
+	return "AppendFactory";
 }
 
 ProgramInfo AppendFactory::createNewProgram()
@@ -93,29 +90,22 @@ AppendFactory::~AppendFactory()
 
 int AppendFactory::chooseNextInstruction(Node* parent)
 {
-	if(searchStrategy == Random)
+	// xxx - this should probably be cached!
+	double max = 0;
+	for(auto child : parent->children)
 	{
-		return random->getInt(initialChildWeights.size());
+		max += child.weight;
 	}
-	else
+	
+	double x = random->getDouble(max);
+	double threshold = parent->children[0].weight;
+	int i = 0;
+	while(x > threshold)
 	{
-		// xxx - this should probably be cached!
-		double max = 0;
-		for(auto child : parent->children)
-		{
-			max += child.weight;
-		}
-		
-		double x = random->getDouble(max);
-		double threshold = parent->children[0].weight;
-		int i = 0;
-		while(x > threshold)
-		{
-			++i;
-			threshold += parent->children[i].weight;
-		}
-		return i;
+		++i;
+		threshold += parent->children[i].weight;
 	}
+	return i;
 }
 
 Node* AppendFactory::allocateNode(int instruction, Node* parent)
