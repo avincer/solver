@@ -3,10 +3,8 @@
 #include <cmath>
 
 RandomFactory::RandomFactory(IRandom* random, unsigned char instructionCount)
+	: random(random), instructionCount(instructionCount)
 {
-	this->random = random;
-	this->instructionCount = instructionCount;
-	
 	// pre-compute the number of permutations for different lengths of program
 	// up to the length we can store (which isn't very long)
 	statCount = floor(sizeof(size_t) * 8 * log(2) / log(instructionCount));
@@ -27,6 +25,17 @@ RandomFactory::RandomFactory(IRandom* random, unsigned char instructionCount)
 std::string RandomFactory::getName()
 {
 	return "RandomFactory";
+}
+
+bool RandomFactory::addProgram(const Program& program)
+{
+	// note: guessing is fine when creating random programs, 
+	// but we must be precise here!
+	auto len = program.size();
+	if(len <= statCount && !stats[len].remaining) return false;
+	auto added = programs.insert(program).second;
+	if(added && len <= statCount) --stats[len].remaining;
+	return added;
 }
 
 // returns a new program

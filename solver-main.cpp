@@ -2,7 +2,7 @@
 #include "pile-up.h"
 #include "newtable.h"
 #include "append-factory.h"
-#include "random-factory.h"
+#include "top-factory.h"
 
 #include <csignal>
 #include <memory>
@@ -44,6 +44,10 @@ typedef struct
 	std::string target;
 	std::string targetFile;
 	
+	// factory specific settings
+	size_t topFactoryMaxPrograms;
+	double topFactoryExplorationChance;
+	
 	// vm specific settings
 	int pileUpStackSize;
 	int pileUpMemorySize;
@@ -69,11 +73,15 @@ int main(int argc, char** argv)
 
 	options.factoryList.emplace("append", "Monte Carlo tree search (append instruction mode)");
 	options.factoryList.emplace("random", "Random program generation");
+	options.factoryList.emplace("top", "Random generation and mutation of top programs");
 	
 	options.vm = "pile-up";
 	options.factory = "append";
 	options.randomSeed = -1;
 	options.instructionInitialWeight = 0.5;
+	
+	options.topFactoryMaxPrograms = 100;
+	options.topFactoryExplorationChance = 0.5;
 
 	options.pileUpStackSize = 16;
 	options.pileUpMemorySize = 16;
@@ -110,10 +118,15 @@ int main(int argc, char** argv)
 		std::vector<double> initialWeights(vm->supportedInstructionCount(), options.instructionInitialWeight);
 		factory.reset(new AppendFactory(random.get(), initialWeights));
 	}
-	else
+	else if(options.factory == "random")
 	{
 		factory.reset(new RandomFactory(random.get(), vm->supportedInstructionCount()));
 	}
+	else
+	{
+		factory.reset(new TopFactory(random.get(), vm->supportedInstructionCount(),
+			options.topFactoryMaxPrograms, options.topFactoryExplorationChance));
+	}		
 
 	std::vector<float> target;
 	if(!options.target.empty())
@@ -179,6 +192,9 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 		("weight", po::value<double>(&options.instructionInitialWeight)->default_value(options.instructionInitialWeight), "Sets the initial instruction weight. Should be between 0 and 1")
 		("target", po::value<std::string>(&options.target), "Sets the target sequence.")
 		("target-file", po::value<std::string>(&options.targetFile), "Loads the target sequence from a file.")
+
+		("top-factory-max-programs", po::value<size_t>(&options.topFactoryMaxPrograms)->default_value(options.topFactoryMaxPrograms), "Sets number of top programs to store in top factory.")
+		("top-factory-exploration-chance", po::value<double>(&options.topFactoryExplorationChance)->default_value(options.topFactoryExplorationChance), "Sets chance of exploring new program (vs mutating existing program).")
 		
 		("pile-up-stack-size", po::value<int>(&options.pileUpStackSize)->default_value(options.pileUpStackSize), "Sets stack size for the pile-up VM.")
 		("pile-up-memory-size", po::value<int>(&options.pileUpMemorySize)->default_value(options.pileUpMemorySize), "Sets memory size for the pile-up VM.")

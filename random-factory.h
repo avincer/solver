@@ -31,7 +31,7 @@ class RandomFactory : public IProgramFactory
 {
 	private:
 		IRandom* random;
-		unsigned char instructionCount;
+		const unsigned char instructionCount;
 		
 		std::vector<ProgramStats> stats;
 		size_t statCount;
@@ -44,8 +44,10 @@ class RandomFactory : public IProgramFactory
 
 		std::string getName();
 
-		// returns a new program
+		// returns a new (random) program
 		ProgramInfo createNewProgram();
+		
+		bool addProgram(const Program& program);
 
 		// no-op for this factory
 		void recordProgramScore(ProgramInfo program) {}
