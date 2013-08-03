@@ -8,3 +8,4 @@ vs/*.sdf
 vs/*.opensdf
 vs/*.suo
 vs/x64/*
+oprofile_data/*
