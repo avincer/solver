@@ -12,7 +12,7 @@ class Solver
 		static const int bestProgramCount = 10;
 		
 		// how many programs to run between updates
-		static const int updatePeriod = 100000;
+		static const int updatePeriod = 1000000;
 		
 		// the best programs so far, ordered by score (best first)
 		std::list<ProgramInfo> bestPrograms;

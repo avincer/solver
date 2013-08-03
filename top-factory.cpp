@@ -1,5 +1,7 @@
 #include "top-factory.h"
 
+#include <sstream>
+
 TopFactory::TopFactory(IRandom* random, unsigned char instructionCount,
 					   size_t maxTopPrograms, double explorationChance) :
 	random(random),
@@ -14,7 +16,10 @@ TopFactory::TopFactory(IRandom* random, unsigned char instructionCount,
 
 std::string TopFactory::getName()
 {
-	return "TopFactory";
+	std::ostringstream name;
+	name << "TopFactory(maxTopPrograms = " << maxTopPrograms << 
+		", explorationChance = " << explorationChance << ")";
+	return name.str();
 }
 
 ProgramInfo TopFactory::createNewProgram()

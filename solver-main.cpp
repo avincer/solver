@@ -94,7 +94,7 @@ int main(int argc, char** argv)
 	// todo - find windows equivalent of this
 #ifdef __linux
 	// throw on floating point exceptions
-	feenableexcept(FE_INVALID | FE_OVERFLOW);
+	feenableexcept(FE_DIVBYZERO | FE_INVALID);
 #endif
 	
 	std::unique_ptr<IVM> vm;
