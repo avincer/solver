@@ -36,7 +36,7 @@ class IProgramFactory
 		
 		// updates internal statistics with the score for this program
 		// note: requires program.score to be set!
-		virtual void recordProgramScore(ProgramInfo program) = 0;
+		virtual void recordProgramScore(const ProgramInfo& program) = 0;
 		
 		virtual void toXml(std::ostream& stream) = 0;
 		

@@ -63,7 +63,7 @@ ProgramInfo TopFactory::createNewProgram()
 	}
 }
 
-void TopFactory::recordProgramScore(ProgramInfo programInfo)
+void TopFactory::recordProgramScore(const ProgramInfo& programInfo)
 {
 	if(topPrograms.size() < maxTopPrograms || 
 		programInfo.score > topPrograms.back().score)

@@ -33,7 +33,7 @@ class TopFactory : public IProgramFactory
 		
 		ProgramInfo createNewProgram();
 		
-		void recordProgramScore(ProgramInfo program);
+		void recordProgramScore(const ProgramInfo& program);
 		
 		Mutation popRandomMutation(std::vector<Mutation>& mutations);
 	

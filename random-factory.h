@@ -50,7 +50,7 @@ class RandomFactory : public IProgramFactory
 		bool addProgram(const Program& program);
 
 		// no-op for this factory
-		void recordProgramScore(ProgramInfo program) {}
+		void recordProgramScore(const ProgramInfo& program) {}
 
 		// review - do we need this?
 		void toXml(std::ostream& stream) {}

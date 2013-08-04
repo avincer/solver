@@ -34,7 +34,7 @@ class AppendFactory : public IProgramFactory
 		ProgramInfo createNewProgram();
 		
 		// set the score for a generated program, and update stats
-		void recordProgramScore(ProgramInfo program);
+		void recordProgramScore(const ProgramInfo& program);
 		
 		void toXml(std::ostream& stream);
 		

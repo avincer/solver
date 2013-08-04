@@ -29,7 +29,7 @@ ProgramInfo AppendFactory::createNewProgram()
 	return p;
 }
 
-void AppendFactory::recordProgramScore(ProgramInfo program)
+void AppendFactory::recordProgramScore(const ProgramInfo& program)
 {
 	auto node = (Node*)program.node;
 	node->setScore(program.score);

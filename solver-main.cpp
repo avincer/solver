@@ -143,7 +143,7 @@ int main(int argc, char** argv)
 	
 	// build and run the solver (go put the kettle on...)
 	solver.reset(new Solver(factory.get(), vm.get(), target));
-	solver->run(3000000);
+	solver->run(10000000);
 	
 	return 0;
 }
