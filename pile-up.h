@@ -90,7 +90,7 @@ class VM : public IVM
 		// each entry is a method on MathStack
 		std::vector<Result (MathStack::*)()> handlers;
 		
-		std::vector<int> program;
+		Program program;
 		
 		// debug options
 		DebugMode debugMode;
@@ -106,9 +106,9 @@ class VM : public IVM
 		
         int supportedInstructionCount();
 		
-		void loadProgram(const std::vector<int>& program);
+		void loadProgram(const Program& program);
 		
-        std::string returnStringForm(const std::vector<int>& program);
+		std::string returnStringForm(const Program& program);
 		
 		bool run(float seed, float* output);
 		

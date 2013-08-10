@@ -1,5 +1,7 @@
 #pragma once
 
+#include "types.h"
+
 #include <vector>
 #include <string>
 
@@ -14,11 +16,9 @@ class IVM
         virtual int supportedInstructionCount() = 0;
 		
 		// load a program
-        virtual void loadProgram(const std::vector<int>& program) = 0;
+		virtual void loadProgram(const Program& program) = 0;
 
-        virtual std::string returnStringForm(const std::vector<int>& program) = 0;
-
-        virtual std::vector<int>& getCodeReadOnly() {}
+		virtual std::string returnStringForm(const Program& program) = 0;
 
         // returns false if the program failed to produce output
 		virtual bool run(float seed, float* output) = 0;

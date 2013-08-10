@@ -1,50 +1,47 @@
-#include "tree.h"
+#include "append-factory.h"
 
 #include <iostream>
 
-ProgramTree::ProgramTree(IRandom* random, 
-			const std::vector<double>& initialChildWeights,
-			SearchStrategy searchStrategy)
+AppendFactory::AppendFactory(IRandom* random, 
+			const std::vector<double>& initialChildWeights)
 {
 	this->random = random;
 	this->initialChildWeights = initialChildWeights;
-	this->searchStrategy = searchStrategy;
 	
 	// note: instruction for root node is ignored
 	root = allocateNode(-1, nullptr);
 }
 
-std::string ProgramTree::getName()
+std::string AppendFactory::getName()
 {
-	return searchStrategy == Random ? 
-		"ProgramTree(random search)" : "ProgramTree(directed search)";
+	return "AppendFactory";
 }
 
-Program ProgramTree::createNewProgram()
+ProgramInfo AppendFactory::createNewProgram()
 {
 	// note: the intention here is to clear the vector but retain allocated memory
 	// freeing and reallocating is a waste of time
 	currentProgram.clear();
 	
-	Program p;
+	ProgramInfo p;
 	p.node = createNewNode(root);
-	p.instructions = currentProgram;
+	p.program = currentProgram;
 	return p;
 }
 
-void ProgramTree::recordProgramScore(Program program)
+void AppendFactory::recordProgramScore(const ProgramInfo& program)
 {
 	auto node = (Node*)program.node;
 	node->setScore(program.score);
 }
 
-void ProgramTree::toXml(std::ostream& stream)
+void AppendFactory::toXml(std::ostream& stream)
 {
 	stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << std::endl;
 	root->toXml(stream);
 }
 
-void ProgramTree::dumpProgramInformation(const std::vector<int>& program)
+void AppendFactory::dumpProgramInformation(const Program& program)
 {
 	double chance = 1;
 	auto node = root;
@@ -86,45 +83,38 @@ void ProgramTree::dumpProgramInformation(const std::vector<int>& program)
 	std::cout << std::endl;
 }
 
-ProgramTree::~ProgramTree()
+AppendFactory::~AppendFactory()
 {
 	cleanup(root);
 }
 
-int ProgramTree::chooseNextInstruction(Node* parent)
+int AppendFactory::chooseNextInstruction(Node* parent)
 {
-	if(searchStrategy == Random)
+	// xxx - this should probably be cached!
+	double max = 0;
+	for(auto child : parent->children)
 	{
-		return random->getInt(initialChildWeights.size());
+		max += child.weight;
 	}
-	else
+	
+	double x = random->getDouble(max);
+	double threshold = parent->children[0].weight;
+	int i = 0;
+	while(x > threshold)
 	{
-		// xxx - this should probably be cached!
-		double max = 0;
-		for(auto child : parent->children)
-		{
-			max += child.weight;
-		}
-		
-		double x = random->getDouble(max);
-		double threshold = parent->children[0].weight;
-		int i = 0;
-		while(x > threshold)
-		{
-			++i;
-			threshold += parent->children[i].weight;
-		}
-		return i;
+		++i;
+		threshold += parent->children[i].weight;
 	}
+	return i;
 }
 
-Node* ProgramTree::allocateNode(int instruction, Node* parent)
+Node* AppendFactory::allocateNode(int instruction, Node* parent)
 {
 	// todo - could probably do better with batch allocation
 	return new Node(instruction, parent, initialChildWeights);
 }
 
-Node* ProgramTree::createNewNode(Node* parent)
+Node* AppendFactory::createNewNode(Node* parent)
 {
 	// debug weights
 	if(false)
@@ -153,7 +143,7 @@ Node* ProgramTree::createNewNode(Node* parent)
 	}
 }
 
-void ProgramTree::cleanup(Node* node)
+void AppendFactory::cleanup(Node* node)
 {
 	for(auto link: node->children)
 	{

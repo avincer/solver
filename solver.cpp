@@ -19,7 +19,7 @@ double Solver::computeScore(int outputLen)
 	return score / target.size();
 }
 
-void Solver::updateBestPrograms(Program& program, int outputLen)
+void Solver::updateBestPrograms(ProgramInfo& program, int outputLen)
 {
 	if(bestPrograms.size() < bestProgramCount || 
 		program.score > bestPrograms.back().score)
@@ -85,13 +85,13 @@ void Solver::outputStatus()
 	
 	std::cout << std::endl;
 	std::cout << " score | output" << std::endl;
-	for(auto program: bestPrograms)
+	for(auto programInfo: bestPrograms)
 	{
-		std::cout << std::setw(6) << std::setprecision(3) << program.score;
+		std::cout << std::setw(6) << std::setprecision(3) << programInfo.score;
 		std::cout << std::setw(0) << " | ";
-		outputSequence(program.output);
+		outputSequence(programInfo.output);
 		std::cout << "       | " << 
-            vm->returnStringForm(program.instructions) << std::endl;
+			vm->returnStringForm(programInfo.program) << std::endl;
 		std::cout << std::endl;
 	}
 	std::cout << std::endl;
@@ -117,16 +117,17 @@ Solver::Solver(IProgramFactory* factory, IVM* vm,
 	programCount = 0;
 }
 
-void Solver::run()
+void Solver::run(size_t maxPrograms)
 {
 	running = true;
+	auto remainingPrograms = maxPrograms;
 	timer.start();
 	
 	while(running)
 	{
 		// create a program and load it into the VM
-		Program program = factory->createNewProgram();
-		vm->loadProgram(program.instructions);
+		ProgramInfo programInfo = factory->createNewProgram();
+		vm->loadProgram(programInfo.program);
 		
 		// run the program and store output
 		bool result = true;
@@ -137,15 +138,21 @@ void Solver::run()
 		}
 		
 		// score the program and update the program factory stats
-		program.score = computeScore(i);
-		factory->recordProgramScore(program);
+		programInfo.score = computeScore(i);
+		factory->recordProgramScore(programInfo);
 		
 		// record it if it was any good
-		updateBestPrograms(program, i);
+		updateBestPrograms(programInfo, i);
+
+		++programCount;
 
 		// output status every so often
-		++programCount;
 		if(programCount % updatePeriod == 0) outputStatus();
+
+		if(maxPrograms) {
+			--remainingPrograms;
+			if(!remainingPrograms) running = false;
+		}
 	}
 }
 
@@ -162,7 +169,7 @@ void Solver::save(const std::string& fileName)
 	factory->toXml(file);
 }
 
-void Solver::dumpProgramInformation(const std::vector<int>& program)
+void Solver::dumpProgramInformation(const Program& program)
 {
 	factory->dumpProgramInformation(program);
 }

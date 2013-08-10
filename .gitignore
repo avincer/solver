@@ -4,3 +4,8 @@ run/*
 *.zip
 *.out.*
 tree.xml
+vs/*.sdf
+vs/*.opensdf
+vs/*.suo
+vs/x64/*
+oprofile_data/*

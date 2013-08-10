@@ -1,2 +1,22 @@
 #!/bin/bash
-g++ --std=c++11 -O2 solver-main.cpp solver.cpp tree.cpp node.cpp pile-up.cpp newtable.cpp math-stack.cpp result.cpp -lboost_program_options -o run/solver
+
+#debug flags
+DEBUG_FLAGS="-g"
+
+#profiler flags
+PROFILER_FLAGS="-g -O2 -fno-inline"
+
+#release flags
+RELEASE_FLAGS="-O2"
+
+FLAGS=$RELEASE_FLAGS
+if [ $# -gt 0 ]; then
+	case $1 in
+	debug) FLAGS=$DEBUG_FLAGS;;
+	profiler) FLAGS=$PROFILER_FLAGS;;
+	release) FLAGS=$RELEASE_FLAGS;;
+	*) echo "Unknown target - building release";;
+	esac
+fi
+
+g++ --std=c++11 $FLAGS solver-main.cpp solver.cpp append-factory.cpp random-factory.cpp top-factory.cpp mutation-cache.cpp node.cpp pile-up.cpp newtable.cpp math-stack.cpp result.cpp -lboost_program_options -o run/solver

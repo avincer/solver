@@ -9,13 +9,13 @@ class Solver
 {
 	private:
 		// how many of the best programs to display
-		const int bestProgramCount = 10;
+		static const int bestProgramCount = 10;
 		
 		// how many programs to run between updates
-		const int updatePeriod = 100000;
+		static const int updatePeriod = 1000000;
 		
 		// the best programs so far, ordered by score (best first)
-		std::list<Program> bestPrograms;
+		std::list<ProgramInfo> bestPrograms;
 		
 		// factory and vm to be used
 		IProgramFactory* factory;
@@ -25,7 +25,7 @@ class Solver
 		std::vector<float> target, output;
 
 		// status
-		int programCount;
+		size_t programCount;
 		bool running;
 		
 		// use a timer to measure run time
@@ -39,7 +39,7 @@ class Solver
 		double computeScore(int outputLen);
 		
 		// updates the list of best programs with program
-		void updateBestPrograms(Program& program, int outputLen);
+		void updateBestPrograms(ProgramInfo& program, int outputLen);
 		
 		void outputStatus();
 		
@@ -52,7 +52,7 @@ class Solver
 		Solver(IProgramFactory* factory, IVM* vm, 
 			   const std::vector<float>& target);
 
-		void run();
+		void run(size_t maxPrograms);
 		
 		void stop();
 		
@@ -60,5 +60,5 @@ class Solver
 		
 		void save(const std::string& fileName);
 		
-		void dumpProgramInformation(const std::vector<int>& program);
+		void dumpProgramInformation(const Program& program);
 };

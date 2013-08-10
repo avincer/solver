@@ -1,13 +1,15 @@
 #include "solver.h"
 #include "pile-up.h"
 #include "newtable.h"
-#include "tree.h"
+#include "append-factory.h"
+#include "top-factory.h"
 
 #include <csignal>
 #include <memory>
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <map>
 
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/options_description.hpp>
@@ -29,18 +31,22 @@ typedef struct
 {
 	// capabilities (name -> description)
 	std::map<std::string, std::string> vmList;
-	std::map<std::string, std::string> searchMethodList;
-	
+	std::map<std::string, std::string> factoryList;
+
 	// program settings
 	std::string vm;
+	std::string factory;
 	int randomSeed;
 	
 	// todo - add support for setting individual instruction weights
 	double instructionInitialWeight;
 	
-	std::string searchMethod;
 	std::string target;
 	std::string targetFile;
+	
+	// factory specific settings
+	size_t topFactoryMaxPrograms;
+	double topFactoryExplorationChance;
 	
 	// vm specific settings
 	int pileUpStackSize;
@@ -62,22 +68,20 @@ int main(int argc, char** argv)
 	// set option defaults
 	SolverOptions options;
 	
-	options.vmList = 
-	{ 
-		{ "pile-up", "virtual machine using stack based arithmetic" },
-		{ "newtable", "" }
-	};
-	
-	options.searchMethodList = 
-	{ 
-		{ "directed", "generate programs based on the performance of previously run programs" },
-		{ "random", "generate programs at random" }
-	};
+	options.vmList.emplace("pile-up", "virtual machine using stack based arithmetic");
+	options.vmList.emplace("newtable", "");
+
+	options.factoryList.emplace("append", "Monte Carlo tree search (append instruction mode)");
+	options.factoryList.emplace("random", "Random program generation");
+	options.factoryList.emplace("top", "Random generation and mutation of top programs");
 	
 	options.vm = "pile-up";
+	options.factory = "append";
 	options.randomSeed = -1;
 	options.instructionInitialWeight = 0.5;
-	options.searchMethod = "directed";
+	
+	options.topFactoryMaxPrograms = 100;
+	options.topFactoryExplorationChance = 0.5;
 
 	options.pileUpStackSize = 16;
 	options.pileUpMemorySize = 16;
@@ -90,10 +94,9 @@ int main(int argc, char** argv)
 	// todo - find windows equivalent of this
 #ifdef __linux
 	// throw on floating point exceptions
-	feenableexcept(FE_INVALID | FE_OVERFLOW);
+	feenableexcept(FE_DIVBYZERO | FE_INVALID);
 #endif
 	
-	// todo - allow selecting other VMs
 	std::unique_ptr<IVM> vm;
 	if(options.vm == "pile-up")
 	{
@@ -108,13 +111,23 @@ int main(int argc, char** argv)
 	
 	std::unique_ptr<IRandom> random(new CStdRandom());
 	random->init(seed);
-	
-	std::vector<double> initialWeights(vm->supportedInstructionCount(), options.instructionInitialWeight);
-	
-	// todo - allow selecting which program factory to use
-	auto searchMethod = options.searchMethod == "directed" ? Directed : Random;
-	std::unique_ptr<IProgramFactory> factory(new ProgramTree(random.get(), initialWeights, searchMethod));
-	
+		
+	std::unique_ptr<IProgramFactory> factory;
+	if(options.factory == "append")
+	{
+		std::vector<double> initialWeights(vm->supportedInstructionCount(), options.instructionInitialWeight);
+		factory.reset(new AppendFactory(random.get(), initialWeights));
+	}
+	else if(options.factory == "random")
+	{
+		factory.reset(new RandomFactory(random.get(), vm->supportedInstructionCount()));
+	}
+	else
+	{
+		factory.reset(new TopFactory(random.get(), vm->supportedInstructionCount(),
+			options.topFactoryMaxPrograms, options.topFactoryExplorationChance));
+	}		
+
 	std::vector<float> target;
 	if(!options.target.empty())
 	{
@@ -130,7 +143,7 @@ int main(int argc, char** argv)
 	
 	// build and run the solver (go put the kettle on...)
 	solver.reset(new Solver(factory.get(), vm.get(), target));
-	solver->run();
+	solver->run(10000000);
 	
 	return 0;
 }
@@ -174,11 +187,14 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 		("version", "Print program version.")
 		
 		("vm", po::value<std::string>(&options.vm)->default_value(options.vm), "Selects the virtual machine to use. Passing list will print supported VMs.")
+		("factory", po::value<std::string>(&options.factory)->default_value(options.factory), "Selects the program factory to use. Passing list will print supported factories.")
 		("seed", po::value<int>(&options.randomSeed)->default_value(options.randomSeed), "Sets the RNG seed. -1 selects a seed at runtime.")
 		("weight", po::value<double>(&options.instructionInitialWeight)->default_value(options.instructionInitialWeight), "Sets the initial instruction weight. Should be between 0 and 1")
-		("search", po::value<std::string>(&options.searchMethod)->default_value(options.searchMethod), "Selects the search method to use. Passing list will print supported methods.")
 		("target", po::value<std::string>(&options.target), "Sets the target sequence.")
-		("targetFile", po::value<std::string>(&options.targetFile), "Loads the target sequence from a file.")
+		("target-file", po::value<std::string>(&options.targetFile), "Loads the target sequence from a file.")
+
+		("top-factory-max-programs", po::value<size_t>(&options.topFactoryMaxPrograms)->default_value(options.topFactoryMaxPrograms), "Sets number of top programs to store in top factory.")
+		("top-factory-exploration-chance", po::value<double>(&options.topFactoryExplorationChance)->default_value(options.topFactoryExplorationChance), "Sets chance of exploring new program (vs mutating existing program).")
 		
 		("pile-up-stack-size", po::value<int>(&options.pileUpStackSize)->default_value(options.pileUpStackSize), "Sets stack size for the pile-up VM.")
 		("pile-up-memory-size", po::value<int>(&options.pileUpMemorySize)->default_value(options.pileUpMemorySize), "Sets memory size for the pile-up VM.")
@@ -243,13 +259,13 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 	};
 	
 	if(!checkListOption("vm", options.vmList)) return false;
-	if(!checkListOption("search", options.searchMethodList)) return false;
+	if(!checkListOption("factory", options.factoryList)) return false;
 
 	// we require exactly one of target or targetFile
 	int targetOptions = (int)(!options.target.empty()) + (int)(!options.targetFile.empty());
 	if(targetOptions != 1)
 	{
-		std::cout << "Please specify target sequence using --target or --targetFile (but not both!)" << std::endl;
+		std::cout << "Please specify target sequence using --target or --target-file (but not both!)" << std::endl;
 		return false;
 	}
 
@@ -284,7 +300,7 @@ void pause(int signal)
 					std::string programPath, temp;
 					std::cin >> programPath;
 					std::istringstream ss(programPath);
-					std::vector<int> program;
+					Program program;
 					while(std::getline(ss, temp, '/'))
 					{
 						//std::cout << "'" << temp << "'" << std::endl;

@@ -13,9 +13,9 @@ namespace newtAble
 
 			int supportedInstructionCount();
 
-			void loadProgram(const std::vector<int>& program);
+			void loadProgram(const Program& program);
 
-			std::string returnStringForm(const std::vector<int>& program);
+			std::string returnStringForm(const Program& program);
 
 			std::string last_runTime_code();
 
@@ -23,15 +23,13 @@ namespace newtAble
 
 			std::string getLastError();
 
-			std::vector<int>& getCodeReadOnly();
-
 			bool runTime_code_output;
 
 			bool run(float seed, float* output);
 
 		private:
 			int maxOps;
-			std::vector<int>
+			Program
 				code,
 				code_runTime_copy;
 			bool first_value;

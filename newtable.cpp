@@ -18,12 +18,12 @@ namespace newtAble
 		return 11;}
 
 	void VM::loadProgram(
-		const std::vector<int>& program) {
+		const Program& program) {
 		code = program;
 		reset();}
 
 	std::string VM::returnStringForm(
-		const std::vector<int>& program)
+		const Program& program)
 	{
 		std::string str;
 		auto code_length = program.size();
@@ -49,9 +49,6 @@ namespace newtAble
 
 	std::string VM::getLastError() {
 		return last_error;}
-
-	std::vector<int>& VM::getCodeReadOnly() {
-		return code;}
 
 	bool VM::run(float seed, float* output)
 	{

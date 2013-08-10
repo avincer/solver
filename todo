@@ -1,0 +1,11 @@
+Features
+========
+- better build system
+
+Code Review
+===========
+- use typedef in place of unsigned char when an instruction type is meant?
+- check useage of random getInt method - should it be int?
+- remove toXml method from factory - writing that much xml is neither expedient nor useful!
+- try to use unique_ptr properly...
+- review use of copying objects when we could use a pointer or a reference
