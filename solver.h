@@ -36,7 +36,7 @@ class Solver
 		
 		// the scoring function
 		// computes score from target and output vectors
-		double computeScore(int outputLen);
+		double scoreOutput(int outputLen);
 		
 		// updates the list of best programs with program
 		void updateBestPrograms(ProgramInfo& program, int outputLen);

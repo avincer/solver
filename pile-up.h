@@ -110,7 +110,7 @@ class VM : public IVM
 		
 		std::string returnStringForm(const Program& program);
 		
-		bool run(float seed, float* output);
+		bool run(float seed, float& output, int& opCount);
 		
 		std::string getLastError();
 		

@@ -93,12 +93,11 @@ std::string VM::returnStringForm(const Program& program)
 	return result.str();
 }
 
-bool VM::run(float seed, float* output)
+bool VM::run(float seed, float& output, int& opCount)
 {
 	if(!program.size()) throw "No program loaded!";
 	
-	int pos = 0;
-	int opCount = 0;
+	int pos = 0, offset;
 	float target, condition;
 	
 	// stack is reset at the start of each run
@@ -121,19 +120,19 @@ bool VM::run(float seed, float* output)
 			switch(instruction)
 			{
 				case jif:
-					result = stack.pop(&target);
+					result = stack.popInt(&offset);
 					if(result == Ok)
 					{
 						result = stack.pop(&condition);
 						if(result == Ok)
 						{
-							pos += condition ? (int)target : 1;
+							pos += condition ? offset : 1;
 						}
 					}
 					break;
 				case jmp:
-					result = stack.pop(&target);
-					if(result == Ok) pos += (int)target;
+					result = stack.popInt(&offset);
+					if(result == Ok) pos += offset;
 					break;
 				case ret:
 					pos = -1;
@@ -141,12 +140,11 @@ bool VM::run(float seed, float* output)
 					
 				case get:
 				case put:
-					result = stack.pop(&target);
+					result = stack.popInt(&offset);
 					if(result == Ok)
 					{
-						int addr = (int)target;
 						// wrap to [0, memorySize) (don't forget negative numbers!)
-						addr = ((addr % memorySize) + memorySize) % memorySize;
+						int addr = ((offset % memorySize) + memorySize) % memorySize;
 						
 						if(instruction == get)
 						{
@@ -196,7 +194,7 @@ bool VM::run(float seed, float* output)
 	{
 		// program terminated normally - try and get result
 		// peek instruction not part of program so return different error
-		if(stack.peek(output) != Ok) result = NoOutput;
+		if(stack.peek(&output) != Ok) result = NoOutput;
 	}
 	else
 	{

@@ -6,7 +6,7 @@
 
 const char* Solver::version = "0.2";
 
-double Solver::computeScore(int outputLen)
+double Solver::scoreOutput(int outputLen)
 {
 	// todo - consider whether factoring in the length of the 
 	// program is the correct approach
@@ -131,14 +131,17 @@ void Solver::run(size_t maxPrograms)
 		
 		// run the program and store output
 		bool result = true;
-		int i = 0;
+		int i = 0, opCount = 0;
 		for(; (i < target.size()) && result; ++i)
 		{
-			result = vm->run(i, &output[i]);
+			result = vm->run(i, output[i], opCount);
 		}
 		
 		// score the program and update the program factory stats
-		programInfo.score = computeScore(i);
+		auto outputScore = scoreOutput(i);
+		auto speedScore = 1.0 / (1 + opCount);
+		// todo - parameterise relative weight of accuracy vs speed
+		programInfo.score = (9 * outputScore + speedScore) / 10;
 		factory->recordProgramScore(programInfo);
 		
 		// record it if it was any good
