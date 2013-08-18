@@ -141,9 +141,13 @@ int main(int argc, char** argv)
 	// terminate on user signal
 	signal(SIGINT, pause);
 	
+	// suspect we always want to exit once a solution has been found
+	// todo - parameterise if required
+	auto exitOnFirstSolution = true;
+	
 	// build and run the solver (go put the kettle on...)
 	solver.reset(new Solver(factory.get(), vm.get(), target));
-	solver->run(0 /*10000000*/);
+	solver->run(0 /*10000000*/, exitOnFirstSolution);
 	
 	return 0;
 }

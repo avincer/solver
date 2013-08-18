@@ -117,7 +117,7 @@ Solver::Solver(IProgramFactory* factory, IVM* vm,
 	programCount = 0;
 }
 
-void Solver::run(size_t maxPrograms)
+void Solver::run(size_t maxPrograms, bool exitOnFirstSolution)
 {
 	running = true;
 	auto remainingPrograms = maxPrograms;
@@ -152,10 +152,15 @@ void Solver::run(size_t maxPrograms)
 		// output status every so often
 		if(programCount % updatePeriod == 0) outputStatus();
 
-		if(maxPrograms) {
+		if(maxPrograms)
+		{
 			--remainingPrograms;
 			if(!remainingPrograms) running = false;
 		}
+		
+		if(exitOnFirstSolution && outputScore == 1) running = false;
+		
+		if(!running) outputStatus();
 	}
 }
 

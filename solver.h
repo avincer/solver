@@ -52,7 +52,7 @@ class Solver
 		Solver(IProgramFactory* factory, IVM* vm, 
 			   const std::vector<float>& target);
 
-		void run(size_t maxPrograms);
+		void run(size_t maxPrograms, bool exitOnFirstSolution);
 		
 		void stop();
 		
