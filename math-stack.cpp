@@ -119,6 +119,7 @@ Result MathStack::dec()
 Result MathStack::trunc()
 {
 	if(pos < 1) return StackUnderflow;
+	if(stack[pos - 1] < INT_MIN || stack[pos - 1] > INT_MAX) return MathError;
 	stack[pos - 1] = (int)stack[pos - 1];
 	return Ok;
 }
