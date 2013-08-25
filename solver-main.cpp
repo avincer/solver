@@ -40,14 +40,18 @@ typedef struct
 	std::string factory;
 	int randomSeed;
 	
-	// todo - add support for setting individual instruction weights
-	double instructionInitialWeight;
 	double brevityWeight;
 	
 	std::string target;
 	std::string targetFile;
 	
+	size_t maxPrograms;
+	bool exitOnFirstSolution;
+	
 	// factory specific settings
+	double appendFactoryInitialInstructionWeight;
+	// todo - add support for setting individual instruction weights
+	
 	size_t topFactoryMaxPrograms;
 	double topFactoryExplorationChance;
 	
@@ -81,8 +85,11 @@ int main(int argc, char** argv)
 	options.vm = "pile-up";
 	options.factory = "append";
 	options.randomSeed = -1;
-	options.instructionInitialWeight = 0.5;
-	options.brevityWeight = 0.2;
+	options.brevityWeight = 0.125;
+	options.maxPrograms = 0;
+	options.exitOnFirstSolution = false;
+	
+	options.appendFactoryInitialInstructionWeight = 0.5;
 	
 	options.topFactoryMaxPrograms = 100;
 	options.topFactoryExplorationChance = 0.5;
@@ -119,7 +126,7 @@ int main(int argc, char** argv)
 	std::unique_ptr<IProgramFactory> factory;
 	if(options.factory == "append")
 	{
-		std::vector<double> initialWeights(vm->supportedInstructionCount(), options.instructionInitialWeight);
+		std::vector<double> initialWeights(vm->supportedInstructionCount(), options.appendFactoryInitialInstructionWeight);
 		factory.reset(new AppendFactory(random.get(), initialWeights));
 	}
 	else if(options.factory == "random")
@@ -145,13 +152,9 @@ int main(int argc, char** argv)
 	// terminate on user signal
 	signal(SIGINT, pause);
 	
-	// suspect we always want to exit once a solution has been found
-	// todo - parameterise if required
-	auto exitOnFirstSolution = true;
-	
 	// build and run the solver (go put the kettle on...)
 	solver.reset(new Solver(factory.get(), vm.get(), target));
-	solver->run(0 /*10000000*/, exitOnFirstSolution, options.brevityWeight);
+	solver->run(options.maxPrograms, options.exitOnFirstSolution, options.brevityWeight);
 	
 	return 0;
 }
@@ -189,22 +192,31 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 {
 	namespace po = boost::program_options;
 	
-	po::options_description optionList("Solver options");
-	optionList.add_options()
+	po::options_description solverOptions("Solver options");
+	solverOptions.add_options()
 		("help", "Print this message.")
 		("version", "Print program version.")
 		
 		option("vm", std::string, vm, "Selects the virtual machine to use. Passing list will print supported VMs.")
 		option("factory", std::string, factory, "Selects the program factory to use. Passing list will print supported factories.")
 		option("seed", int, randomSeed, "Sets the RNG seed. -1 selects a seed at runtime.")
-		option("weight", double, instructionInitialWeight, "Sets the initial instruction weight. Should be between 0 and 1")
 		option("target", std::string, target, "Sets the target sequence.")
 		option("target-file", std::string, targetFile, "Loads the target sequence from a file.")
 		option("brevity-weight", double, brevityWeight, "Sets the bias towards shorter programs. Should be between 0 and 1")
+		option("max-programs", size_t, maxPrograms, "Maximum number of programs to test, or 0 for no limit.")
+		("exit-on-solution", po::value<bool>(&options.exitOnFirstSolution)->zero_tokens(), "Exit once a solution has been found.")
+		;
+		
+	po::options_description factoryOptions("Factory options");
+	factoryOptions.add_options()
+		option("append-factory-instruction-weight", double, appendFactoryInitialInstructionWeight, "Sets the initial instruction weight. Should be between 0 and 1")
 		
 		option("top-factory-max-programs", size_t, topFactoryMaxPrograms, "Sets number of top programs to store in top factory.")
 		option("top-factory-exploration-chance", double, topFactoryExplorationChance, "Sets chance of exploring new program (vs mutating existing program).")
+		;
 		
+	po::options_description vmOptions("VM options");
+	vmOptions.add_options()
 		option("pile-up-stack-size", int, pileUpStackSize, "Sets stack size for the pile-up VM.")
 		option("pile-up-memory-size", int, pileUpMemorySize, "Sets memory size for the pile-up VM.")
 		option("pile-up-max-ops", int, pileUpMaxOps, "Sets maximum operation count for the pile-up VM.")
@@ -212,11 +224,14 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 		option("newtable-most-run-time-per-output", unsigned int, newtableMostRunTimePerOutput, "Sets most run time per output.")
 		;
 	
+	po::options_description allOptions("Allowed options");
+	allOptions.add(solverOptions).add(factoryOptions).add(vmOptions);
+		
 	po::variables_map args;
 
 	try
 	{
-		po::store(po::parse_command_line(argc, argv, optionList), args);
+		po::store(po::parse_command_line(argc, argv, allOptions), args);
 	}
 	catch(const std::exception& ex)
 	{
@@ -229,7 +244,7 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 	
 	if (args.count("help"))
 	{
-		std::cout << optionList << std::endl;
+		std::cout << allOptions << std::endl;
 		return false;
 	}
 	
