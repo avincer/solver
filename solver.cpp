@@ -131,17 +131,18 @@ void Solver::run(size_t maxPrograms, bool exitOnFirstSolution)
 		
 		// run the program and store output
 		bool result = true;
-		int i = 0, opCount = 0;
+		int i = 0;
 		for(; (i < target.size()) && result; ++i)
 		{
-			result = vm->run(i, output[i], opCount);
+			result = vm->run(i, &output[i]);
 		}
 		
 		// score the program and update the program factory stats
 		auto outputScore = scoreOutput(i);
-		auto speedScore = 1.0 / (1 + opCount);
-		// todo - parameterise relative weight of accuracy vs speed
-		programInfo.score = (9 * outputScore + speedScore) / 10;
+		
+		// todo - add scoring based on program length (shorter is better)
+		
+		programInfo.score = outputScore;
 		factory->recordProgramScore(programInfo);
 		
 		// record it if it was any good

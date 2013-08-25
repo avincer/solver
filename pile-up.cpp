@@ -93,11 +93,13 @@ std::string VM::returnStringForm(const Program& program)
 	return result.str();
 }
 
-bool VM::run(float seed, float& output, int& opCount)
+bool VM::run(float seed, float* output)
 {
 	if(!program.size()) throw "No program loaded!";
 	
-	int pos = 0, offset;
+	int pos = 0;
+	int opCount = 0;
+	int offset;
 	float target, condition;
 	
 	// stack is reset at the start of each run
@@ -194,7 +196,7 @@ bool VM::run(float seed, float& output, int& opCount)
 	{
 		// program terminated normally - try and get result
 		// peek instruction not part of program so return different error
-		if(stack.peek(&output) != Ok) result = NoOutput;
+		if(stack.peek(output) != Ok) result = NoOutput;
 	}
 	else
 	{

@@ -25,7 +25,7 @@ namespace newtAble
 
 			bool runTime_code_output;
 
-			bool run(float seed, float& output, int& opCount);
+			bool run(float seed, float* output);
 
 		private:
 			int maxOps;

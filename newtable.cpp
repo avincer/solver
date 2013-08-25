@@ -50,8 +50,7 @@ namespace newtAble
 	std::string VM::getLastError() {
 		return last_error;}
 
-	// todo - set opCount
-	bool VM::run(float seed, float& output, int& opCount)
+	bool VM::run(float seed, float* output)
 	{
 		bool cont = true,
 			ok_run = true;
@@ -158,7 +157,7 @@ namespace newtAble
 				case 7:
 					if(runTime_code_output)
 						last_runTime_code_p += "output @p1";
-					output = code_runTime_copy[
+					*output = code_runTime_copy[
 							code_runTime_copy[code_pos]
 							% code_runTime_size];
 					code_pos++;
