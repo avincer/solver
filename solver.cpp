@@ -65,12 +65,11 @@ void Solver::outputStatus()
 	std::cout << " target: ";
 	outputSequence(target);
 	
-	auto runTime = timer.getElapsedTime(false);
-	auto diffTime = runTime - lastUpdateTime;
-	lastUpdateTime = runTime;
+	double runTime, speed;
+	timer.update(programCount, runTime, speed);
 	
 	std::cout << " status: tested " << programCount << " programs";
-	std::cout << " (" << (int)(updatePeriod / diffTime) << " programs/second)" << std::endl;
+	std::cout << " (" << (int)speed << " programs/second)" << std::endl;
 	
 	auto hours = (int)(runTime / 3600);
 	runTime -= hours * 3600;

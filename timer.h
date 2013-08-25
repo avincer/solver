@@ -3,22 +3,30 @@
 class Timer
 {
 	private:
-		clock_t then;
+		clock_t startTime, lastUpdateTime;
+		size_t lastCount;
+		double lastSpeed;
 		
 	public:
-		// begin timing
 		void start()
 		{
-			then = clock();
+			startTime = lastUpdateTime = clock();
+			lastCount = 0;
+			lastSpeed = 0;
 		}
 		
-		// get the elapsed time in seconds
-		// start time is reset if reset is true
-		double getElapsedTime(bool reset)
+		void update(size_t count, double& totalTime, double& speed)
 		{
 			clock_t now = clock();
-			auto result = (now - then) / (double)CLOCKS_PER_SEC;
-			if(reset) then = now;
-			return result;
+			
+			totalTime = (now - startTime) / (double)CLOCKS_PER_SEC;
+			
+			auto dCount = count - lastCount;
+			auto dTime = (now - lastUpdateTime) / (double)CLOCKS_PER_SEC;
+			speed = (dCount > 0 && dTime > 0) ? dCount / dTime : lastSpeed;
+			
+			lastUpdateTime = now;
+			lastCount = count;
+			lastSpeed = speed;
 		}
 };
