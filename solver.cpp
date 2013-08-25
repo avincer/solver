@@ -117,7 +117,7 @@ Solver::Solver(IProgramFactory* factory, IVM* vm,
 	programCount = 0;
 }
 
-void Solver::run(size_t maxPrograms, bool exitOnFirstSolution)
+void Solver::run(size_t maxPrograms, bool exitOnFirstSolution, double brevityWeight)
 {
 	running = true;
 	auto remainingPrograms = maxPrograms;
@@ -139,10 +139,8 @@ void Solver::run(size_t maxPrograms, bool exitOnFirstSolution)
 		
 		// score the program and update the program factory stats
 		auto outputScore = scoreOutput(i);
-		
-		// todo - add scoring based on program length (shorter is better)
-		
-		programInfo.score = outputScore;
+		auto brevityScore = 1.0 / programInfo.program.size();
+		programInfo.score = (1.0 - brevityWeight) * outputScore + brevityWeight * brevityScore;
 		factory->recordProgramScore(programInfo);
 		
 		// record it if it was any good
