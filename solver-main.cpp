@@ -25,7 +25,7 @@
 #endif
 
 #define option(_arg, _type, _var, _help) (_arg, po::value<_type>(&options._var)->default_value(options._var), _help)
-
+#define flag(_arg, _var, _help) (_arg, po::value<bool>(&options._var)->zero_tokens(), _help)
 std::unique_ptr<Solver> solver;
 
 // storage for program options and capabilities
@@ -47,6 +47,7 @@ typedef struct
 	
 	size_t maxPrograms;
 	bool exitOnFirstSolution;
+	bool pauseOnSigInt;
 	
 	// factory specific settings
 	double appendFactoryInitialInstructionWeight;
@@ -88,6 +89,7 @@ int main(int argc, char** argv)
 	options.brevityWeight = 0.125;
 	options.maxPrograms = 0;
 	options.exitOnFirstSolution = false;
+	options.pauseOnSigInt = false;
 	
 	options.appendFactoryInitialInstructionWeight = 0.5;
 	
@@ -149,8 +151,11 @@ int main(int argc, char** argv)
 		if(!parseCSVFile(options.targetFile, target)) return 0;
 	}
 	
-	// terminate on user signal
-	signal(SIGINT, pause);
+	if(options.pauseOnSigInt)
+	{
+		// pause on user signal
+		signal(SIGINT, pause);
+	}
 	
 	// build and run the solver (go put the kettle on...)
 	solver.reset(new Solver(factory.get(), vm.get(), target));
@@ -204,7 +209,8 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 		option("target-file", std::string, targetFile, "Loads the target sequence from a file.")
 		option("brevity-weight", double, brevityWeight, "Sets the bias towards shorter programs. Should be between 0 and 1")
 		option("max-programs", size_t, maxPrograms, "Maximum number of programs to test, or 0 for no limit.")
-		("exit-on-solution", po::value<bool>(&options.exitOnFirstSolution)->zero_tokens(), "Exit once a solution has been found.")
+		flag("exit-on-solution", exitOnFirstSolution, "Exit once a solution has been found.")
+		flag("pause-on-sig-int", pauseOnSigInt, "Exit once a solution has been found.")
 		;
 		
 	po::options_description factoryOptions("Factory options");
