@@ -4,7 +4,7 @@
 DEBUG_FLAGS="-g"
 
 #profiler flags
-PROFILER_FLAGS="-g -O2 -fno-inline"
+PROFILER_FLAGS="-g -O2 -fno-inline -fno-omit-frame-pointer"
 
 #release flags
 RELEASE_FLAGS="-O2"
