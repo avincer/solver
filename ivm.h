@@ -22,7 +22,6 @@ class IVM
 
         // returns false if the program failed to produce output
 		virtual bool run(float seed, float* output) = 0;
-        // why does this need a seed?
 
         // why the program failed to produce output
 		virtual std::string getLastError() = 0;

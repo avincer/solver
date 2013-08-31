@@ -6,7 +6,7 @@
 
 const char* Solver::version = "0.2";
 
-double Solver::computeScore(int outputLen)
+double Solver::scoreOutput(int outputLen)
 {
 	// todo - consider whether factoring in the length of the 
 	// program is the correct approach
@@ -65,12 +65,11 @@ void Solver::outputStatus()
 	std::cout << " target: ";
 	outputSequence(target);
 	
-	auto runTime = timer.getElapsedTime(false);
-	auto diffTime = runTime - lastUpdateTime;
-	lastUpdateTime = runTime;
+	double runTime, speed;
+	timer.update(programCount, runTime, speed);
 	
 	std::cout << " status: tested " << programCount << " programs";
-	std::cout << " (" << (int)(updatePeriod / diffTime) << " programs/second)" << std::endl;
+	std::cout << " (" << (int)speed << " programs/second)" << std::endl;
 	
 	auto hours = (int)(runTime / 3600);
 	runTime -= hours * 3600;
@@ -117,7 +116,7 @@ Solver::Solver(IProgramFactory* factory, IVM* vm,
 	programCount = 0;
 }
 
-void Solver::run(size_t maxPrograms)
+void Solver::run(size_t maxPrograms, bool exitOnFirstSolution, double brevityWeight)
 {
 	running = true;
 	auto remainingPrograms = maxPrograms;
@@ -138,7 +137,9 @@ void Solver::run(size_t maxPrograms)
 		}
 		
 		// score the program and update the program factory stats
-		programInfo.score = computeScore(i);
+		auto outputScore = scoreOutput(i);
+		auto brevityScore = 1.0 / programInfo.program.size();
+		programInfo.score = (1.0 - brevityWeight) * outputScore + brevityWeight * brevityScore;
 		factory->recordProgramScore(programInfo);
 		
 		// record it if it was any good
@@ -149,10 +150,15 @@ void Solver::run(size_t maxPrograms)
 		// output status every so often
 		if(programCount % updatePeriod == 0) outputStatus();
 
-		if(maxPrograms) {
+		if(maxPrograms)
+		{
 			--remainingPrograms;
 			if(!remainingPrograms) running = false;
 		}
+		
+		if(exitOnFirstSolution && outputScore == 1) running = false;
+		
+		if(!running) outputStatus();
 	}
 }
 

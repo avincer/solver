@@ -21,6 +21,8 @@ class MathStack
 		
 		Result pop(float* x);
 		
+		Result popInt(int* x);
+		
 		// stack functions //
 		Result push(float x);
 		

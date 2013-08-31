@@ -31,12 +31,9 @@ class Solver
 		// use a timer to measure run time
 		Timer timer;
 		
-		// remember time of last update for computing speed
-		double lastUpdateTime;
-		
 		// the scoring function
 		// computes score from target and output vectors
-		double computeScore(int outputLen);
+		double scoreOutput(int outputLen);
 		
 		// updates the list of best programs with program
 		void updateBestPrograms(ProgramInfo& program, int outputLen);
@@ -52,7 +49,7 @@ class Solver
 		Solver(IProgramFactory* factory, IVM* vm, 
 			   const std::vector<float>& target);
 
-		void run(size_t maxPrograms);
+		void run(size_t maxPrograms, bool exitOnFirstSolution, double brevityWeight);
 		
 		void stop();
 		

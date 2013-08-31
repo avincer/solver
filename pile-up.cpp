@@ -99,6 +99,7 @@ bool VM::run(float seed, float* output)
 	
 	int pos = 0;
 	int opCount = 0;
+	int offset;
 	float target, condition;
 	
 	// stack is reset at the start of each run
@@ -121,19 +122,19 @@ bool VM::run(float seed, float* output)
 			switch(instruction)
 			{
 				case jif:
-					result = stack.pop(&target);
+					result = stack.popInt(&offset);
 					if(result == Ok)
 					{
 						result = stack.pop(&condition);
 						if(result == Ok)
 						{
-							pos += condition ? (int)target : 1;
+							pos += condition ? offset : 1;
 						}
 					}
 					break;
 				case jmp:
-					result = stack.pop(&target);
-					if(result == Ok) pos += (int)target;
+					result = stack.popInt(&offset);
+					if(result == Ok) pos += offset;
 					break;
 				case ret:
 					pos = -1;
@@ -141,12 +142,11 @@ bool VM::run(float seed, float* output)
 					
 				case get:
 				case put:
-					result = stack.pop(&target);
+					result = stack.popInt(&offset);
 					if(result == Ok)
 					{
-						int addr = (int)target;
 						// wrap to [0, memorySize) (don't forget negative numbers!)
-						addr = ((addr % memorySize) + memorySize) % memorySize;
+						int addr = ((offset % memorySize) + memorySize) % memorySize;
 						
 						if(instruction == get)
 						{

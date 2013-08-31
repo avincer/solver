@@ -1,4 +1,5 @@
 #include <cmath>
+#include <climits>
 #include <iostream>
 #include <iomanip>
 
@@ -46,6 +47,15 @@ Result MathStack::pop(float* x)
 {
 	if(pos < 1) return StackUnderflow;
 	*x = stack[pos - 1];
+	--pos;
+	return Ok;
+}
+
+Result MathStack::popInt(int* x)
+{
+	if(pos < 1) return StackUnderflow;
+	if(stack[pos - 1] < INT_MIN || stack[pos - 1] > INT_MAX) return MathError;
+	*x = (int)stack[pos - 1];
 	--pos;
 	return Ok;
 }
@@ -109,6 +119,7 @@ Result MathStack::dec()
 Result MathStack::trunc()
 {
 	if(pos < 1) return StackUnderflow;
+	if(stack[pos - 1] < INT_MIN || stack[pos - 1] > INT_MAX) return MathError;
 	stack[pos - 1] = (int)stack[pos - 1];
 	return Ok;
 }

@@ -1,0 +1,55 @@
+#!/usr/bin/python
+#
+# requires python 3
+#
+# parameters to test
+# --factory
+# --brevity-weight
+# --append-factory-instruction-weight
+# --top-factory-max-programs
+# --top-factory-exploration-chance
+#
+
+import os, subprocess
+
+vm = "pile-up"
+targetName = "primes"
+target = "2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47"
+maxPrograms = 1000000000
+outputDir = "results"
+
+brevityWeights = ["0.1", "0.2", "0.3"]
+instructionWeights = ["0.1", "0.3", "0.5", "0.7", "0.9"]
+topFactoryMaxPrograms = ["100", "200", "500", "1000"]
+explorationChance = ["0.1", "0.3", "0.5", "0.7", "0.9"]
+
+def loop(args, desc):
+	for weight in brevityWeights:
+		fileName = "{}/{}-{}-bw={}-{}".format(outputDir, vm, targetName, weight, desc)
+		if os.path.exists(fileName):
+			print("Skipping test", fileName, "(found results file)")
+		else:
+			cmd = "./run/solver --vm=\"{}\" --target=\"{}\" --max-programs={} --brevity-weight={} {}".format(vm, target, maxPrograms, weight, args)
+			print("Running", cmd, ">", fileName, "...")
+			with open(fileName, 'w') as output:
+				print(cmd, file = output)
+
+			shellCmd = "{} >> {}".format(cmd, fileName)
+			subprocess.call(shellCmd, shell=True)
+
+# top factory
+for programs in topFactoryMaxPrograms:
+	args = "--top-factory-max-programs=" + programs
+	desc = "tfmx=" + programs
+	loop(args, desc)
+
+for chance in explorationChance:
+	args = "--top-factory-exploration-chance=" + chance
+	desc = "tfec=" + chance
+	loop(args, desc)
+
+# append factory
+for weight in instructionWeights:
+	args = "--append-factory-instruction-weight=" + weight
+	desc = "afiw=" + weight
+	loop(args, desc)
