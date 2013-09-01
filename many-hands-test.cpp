@@ -1,7 +1,7 @@
 #include "top-factory.h"
 #include "pile-up.h"
 
-std::vector<size_t> bounds { 1000, 10000, 100000, 1000000 };
+std::vector<size_t> bounds { 1000, 10000, 100000, 1000000, 3000000 };
 std::vector<std::unordered_set<Program>> programs;
 
 std::vector<float> target { 2, 3, 5, 7, 11, 13, 17 };
@@ -74,14 +74,15 @@ void doWork(bool first)
 
 int main()
 {
-	std::cout << "workers/relative work";
+	std::cout << ",relative work after N programs" << std::endl;
+	std::cout << "workers/programs";
 	for(auto bound: bounds)
 	{
 		std::cout << "," << bound;
 	}
 	std::cout << std::endl;
 	
-	for(auto i = 1; i <= 8; ++i)
+	for(auto i = 1; i <= 16; ++i)
 	{
 		std::cout << i;
 		doWork(i == 1);
