@@ -28,12 +28,14 @@
 #define flag(_arg, _var, _help) (_arg, po::value<bool>(&options._var)->zero_tokens(), _help)
 std::unique_ptr<Solver> solver;
 
+#include <boost/container/map.hpp>
+
 // storage for program options and capabilities
 typedef struct
 {
 	// capabilities (name -> description)
-	std::map<std::string, std::string> vmList;
-	std::map<std::string, std::string> factoryList;
+    boost::container::map<std::string, std::string> vmList;
+    boost::container::map<std::string, std::string> factoryList;
 
 	// program settings
 	std::string vm;
@@ -260,7 +262,7 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 		return false;
 	}
 	
-	auto checkListOption = [&args](std::string option, std::map<std::string, std::string> list)
+    auto checkListOption = [&args](std::string option, boost::container::map<std::string, std::string> list)
 	{
 		if(args.count(option))
 		{
