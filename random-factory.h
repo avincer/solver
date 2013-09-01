@@ -43,6 +43,8 @@ class RandomFactory : public IProgramFactory
 		RandomFactory(IRandom* random, unsigned char instructionCount);
 
 		std::string getName();
+		
+		const std::unordered_set<Program>& getPrograms() const;
 
 		// returns a new (random) program
 		ProgramInfo createNewProgram();

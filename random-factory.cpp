@@ -27,6 +27,11 @@ std::string RandomFactory::getName()
 	return "RandomFactory";
 }
 
+const std::unordered_set<Program>& RandomFactory::getPrograms() const
+{
+	return programs;
+}
+
 bool RandomFactory::addProgram(const Program& program)
 {
 	// note: guessing is fine when creating random programs, 

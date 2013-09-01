@@ -31,6 +31,8 @@ class TopFactory : public IProgramFactory
 		
 		std::string getName();
 		
+		const RandomFactory* getRandomFactory();
+		
 		ProgramInfo createNewProgram();
 		
 		void recordProgramScore(const ProgramInfo& program);

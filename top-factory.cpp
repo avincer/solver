@@ -22,6 +22,11 @@ std::string TopFactory::getName()
 	return name.str();
 }
 
+const RandomFactory* TopFactory::getRandomFactory()
+{
+	return randomFactory.get();
+}
+
 ProgramInfo TopFactory::createNewProgram()
 {
 	if(topPrograms.size() < maxTopPrograms || random->maybe(explorationChance))

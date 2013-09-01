@@ -1,0 +1,2 @@
+#!/bin/bash
+g++ --std=c++11 -O2 many-hands-test.cpp pile-up.cpp top-factory.cpp random-factory.cpp math-stack.cpp mutation-cache.cpp result.cpp -o run/many-hands-test
