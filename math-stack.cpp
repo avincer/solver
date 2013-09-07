@@ -170,6 +170,7 @@ Result MathStack::fmod()
 {
 	if(pos < 2) return StackUnderflow;
 	if(stack[pos - 1] == 0) return MathError;
+	if(isinf(stack[pos - 2])) return MathError;
 	stack[pos - 2] = ::fmod(stack[pos - 2], stack[pos - 1]);
 	--pos;
 	return Ok;

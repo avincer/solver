@@ -1,11 +1,14 @@
 #include <iostream>
 
 #include "pile-up.h"
+#include "fenv.h"
 
 using namespace PileUp;
 
 int main()
 {
+	feenableexcept(FE_DIVBYZERO | FE_INVALID);
+	
 	std::vector<int> noOutput { drop };
 	
 	std::vector<int> fib
@@ -38,11 +41,16 @@ int main()
 		dup, inc, mul, push3, sub
 	};
 	
-	int stackSize = 16, memorySize = 16, maxOps = 100;
-	auto debugMode = None; // (DebugMode)(DumpStackOnEntry | DumpStackAfterEachInstruction | DumpStackOnExit);
+	Program fmodOfInf
+	{
+	  4, 22, 12, 17, 4, 24, 21, 16, 11, 15, 34
+	};
+	
+	int stackSize = 16, memorySize = 16, maxOps = 1000;
+	auto debugMode = (DebugMode)(DumpStackOnEntry | DumpStackAfterEachInstruction | DumpStackOnExit);
 	
 	VM vm(stackSize, memorySize, maxOps);
-	vm.loadProgram(quad1);
+	vm.loadProgram(fmodOfInf);
 	vm.setDebugMode(debugMode);
 	
 	int i = 0;

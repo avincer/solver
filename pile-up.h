@@ -19,7 +19,7 @@ typedef enum
 {
 	// push //
 	// note: these must be contiguous and in order!
-	pushNeg1,
+	pushNeg1, // = 0
 	push0,
 	push1,
 	push2,
@@ -33,32 +33,32 @@ typedef enum
 	push10,
 	
 	// stack //
-	dup,
+	dup, // = 12
 	swap,
 	drop,
 	
 	// unary math //
-	neg,
+	neg, // = 15
 	inc,
 	dec,
 	truncate,
 	
 	// unary logic //
-	lnot,
+	lnot, // = 19
 	
 	// binary math //
-	add,
+	add, // = 20
 	sub,
 	mul,
 	divide,
 	fmodulus,
 	
 	// binary logic //
-	land,
+	land, // = 25
 	lor,
 	
 	// comparators //
-	eq,
+	eq, // = 27
 	neq,
 	gt,
 	lt,
@@ -66,12 +66,12 @@ typedef enum
 	lte,
 	
 	// flow control
-	jif,
+	jif, // = 33
 	jmp,
 	ret,
 	
 	// memory
-	get,
+	get, // = 36
 	put,
 	
 	InstructionCount // must be last!
