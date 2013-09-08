@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <iomanip>
-#include <fstream>
 
 const char* Solver::version = "0.2";
 
@@ -165,14 +164,6 @@ void Solver::run(size_t maxPrograms, bool exitOnFirstSolution, double brevityWei
 void Solver::stop()
 {
 	running = false;
-}
-
-void Solver::save(const std::string& fileName)
-{
-	// todo - we should save everything we need to resume the search,
-	// not just the factory information
-	std::ofstream file(fileName);
-	factory->toXml(file);
 }
 
 void Solver::dumpProgramInformation(const Program& program)

@@ -4,7 +4,6 @@
 
 #include <vector>
 #include <string>
-#include <ostream>
 
 typedef struct
 {
@@ -37,8 +36,6 @@ class IProgramFactory
 		// updates internal statistics with the score for this program
 		// note: requires program.score to be set!
 		virtual void recordProgramScore(const ProgramInfo& program) = 0;
-		
-		virtual void toXml(std::ostream& stream) = 0;
 		
 		// output information about a program
 		virtual void dumpProgramInformation(const Program& program) = 0;

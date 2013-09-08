@@ -40,28 +40,3 @@ void Node::setScore(double score)
 	this->score = score;
 	if(parent != nullptr) parent->updateStats(score, instruction, score);
 }
-
-void Node::toXml(std::ostream& stream)
-{
-	stream << "<node ";
-	stream << "instruction=\"" << instruction << "\" ";
-	stream << "score=\"" << score << "\" ";
-	stream << "totalDescendantScore=\"" << totalDescendantScore << "\" ";
-	stream << "totalDescendantCount=\"" << totalDescendantCount << "\"";
-	stream << ">\n";
-	for(int i = 0; i < instructionCount; ++i)
-	{
-		if(children[i].node == nullptr)
-		{
-			stream << "<stub ";
-			stream << "instruction=\"" << i << "\" ";
-			stream << "weight=\"" << children[i].weight << "\"";
-			stream << "/>\n";
-		}
-		else
-		{
-			children[i].node->toXml(stream);
-		}
-	}
-	stream << "</node>\n";
-}

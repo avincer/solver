@@ -39,9 +39,6 @@ class TopFactory : public IProgramFactory
 		
 		Mutation popRandomMutation(std::vector<Mutation>& mutations);
 	
-		// todo: remove this method
-		void toXml(std::ostream& stream) {}
-		
 		// todo: write this if required
 		void dumpProgramInformation(const Program& program) {}
 };

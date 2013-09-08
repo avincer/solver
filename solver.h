@@ -53,9 +53,5 @@ class Solver
 		
 		void stop();
 		
-		// todo - load function
-		
-		void save(const std::string& fileName);
-		
 		void dumpProgramInformation(const Program& program);
 };

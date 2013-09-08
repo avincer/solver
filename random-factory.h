@@ -54,9 +54,6 @@ class RandomFactory : public IProgramFactory
 		// no-op for this factory
 		void recordProgramScore(const ProgramInfo& program) {}
 
-		// review - do we need this?
-		void toXml(std::ostream& stream) {}
-
 		// nothing interesting to output
 		void dumpProgramInformation(const Program& program) {}
 };

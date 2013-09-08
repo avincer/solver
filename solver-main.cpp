@@ -309,7 +309,6 @@ void pause(int signal)
 	std::cout << std::endl;
 	std::cout << "c - continue" << std::endl;
 	std::cout << "i /path/to/program - show program information" << std::endl;
-	std::cout << "s - save program tree to xml" << std::endl;
 	std::cout << "q - quit" << std::endl;
 	std::cout << std::endl;
 	
@@ -339,15 +338,6 @@ void pause(int signal)
 					}
 					
 					solver->dumpProgramInformation(program);
-				}
-				break;
-			case 's':
-				{
-					// todo - choice of file name?
-					std::string fileName = "tree.xml";
-					std::cout << "Saving state to " << fileName << " ..." << std::endl;
-					solver->save("tree.xml");
-					std::cout << "Complete." << std::endl;
 				}
 				break;
 			case 'q':

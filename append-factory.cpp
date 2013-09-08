@@ -35,12 +35,6 @@ void AppendFactory::recordProgramScore(const ProgramInfo& program)
 	node->setScore(program.score);
 }
 
-void AppendFactory::toXml(std::ostream& stream)
-{
-	stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << std::endl;
-	root->toXml(stream);
-}
-
 void AppendFactory::dumpProgramInformation(const Program& program)
 {
 	double chance = 1;
