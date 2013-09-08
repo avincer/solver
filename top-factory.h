@@ -33,9 +33,9 @@ class TopFactory : public IProgramFactory
 		
 		const RandomFactory* getRandomFactory();
 		
-		ProgramInfo createNewProgram();
+		const Program& createNewProgram();
 		
-		void recordProgramScore(const ProgramInfo& program);
+		void recordProgramScore(const Program& program, double score);
 		
 		Mutation popRandomMutation(std::vector<Mutation>& mutations);
 	

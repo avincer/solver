@@ -1,5 +1,5 @@
 #include "fast-random-factory.h"
-#include "random-factory.h"
+#include "program-hash.h"
 
 #include <iostream>
 
@@ -23,7 +23,7 @@ int main()
 	std::unordered_set<Program> programs;
 	for(auto i = 1; i <= 0x1000000; ++i)
 	{
-		auto program = fact.createNewProgram().program;
+		auto program = fact.createNewProgram();
 		programs.insert(program);
 		if(!(i & (i - 1))) std::cout << programs.size() << "," << i << "," << 100 * programs.size() / i << std::endl;
 	}

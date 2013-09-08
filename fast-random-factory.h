@@ -18,7 +18,7 @@ class FastRandomFactory : public IProgramFactory
 		unsigned char instructionCount;
 		
 		std::vector<Probabilities> probs;
-		ProgramInfo programInfo;
+		Program program;
 		
 	public:
 		FastRandomFactory(IRandom* random, unsigned char instructionCount)
@@ -44,7 +44,8 @@ class FastRandomFactory : public IProgramFactory
 		
 		std::string getName() { return "FastRandomFactory"; }
 		
-		ProgramInfo createNewProgram()
+		// xxx - this method is not thread safe!
+		const Program& createNewProgram()
 		{
 			// choose length
 			auto len = 1;
@@ -54,18 +55,18 @@ class FastRandomFactory : public IProgramFactory
 			probs[len].pNotProgram *= (probs[len].permutations - 1.0) / probs[len].permutations;
 			probs[len].pAllPrograms = pow(1.0 - probs[len].pNotProgram, probs[len].permutations);
 			
-			programInfo.program.clear();
-			programInfo.program.reserve(len);
+			program.clear();
+			program.reserve(len);
 			for(auto i = 0; i < len; ++i)
 			{
-				programInfo.program.push_back(random->getInt(instructionCount));
+				program.push_back(random->getInt(instructionCount));
 			}
 			
-			return programInfo;
+			return program;
 		}
 		
 		// no-op for this factory
-		void recordProgramScore(const ProgramInfo& program) {}
+		void recordProgramScore(const Program& program, double score) {}
 		
 		// nothing interesting to output
 		void dumpProgramInformation(const Program& program) {}

@@ -4,6 +4,19 @@
 
 #include <list>
 
+typedef struct
+{
+	// the program
+	Program program;
+	
+	// score for this program
+	double score;
+	
+	// output for this program, if any
+	std::vector<float> output;
+}
+ProgramInfo;
+
 // solver ties together components to generate, run and score programs
 class Solver
 {
@@ -36,7 +49,7 @@ class Solver
 		double scoreOutput(int outputLen);
 		
 		// updates the list of best programs with program
-		void updateBestPrograms(ProgramInfo& program, int outputLen);
+		void updateBestPrograms(const Program& program, double score, int outputLen);
 		
 		void outputStatus();
 		

@@ -27,7 +27,7 @@ const RandomFactory* TopFactory::getRandomFactory()
 	return randomFactory.get();
 }
 
-ProgramInfo TopFactory::createNewProgram()
+const Program& TopFactory::createNewProgram()
 {
 	if(topPrograms.size() < maxTopPrograms || random->maybe(explorationChance))
 	{
@@ -37,8 +37,6 @@ ProgramInfo TopFactory::createNewProgram()
 	else
 	{
 		// mutate existing program
-		ProgramInfo programInfo;
-		
 		while(1)
 		{
 			auto pos = random->getInt(maxTopPrograms);
@@ -51,7 +49,7 @@ ProgramInfo TopFactory::createNewProgram()
 			
 			auto mutation = popRandomMutation(topProgram.remainingMutations);
 			
-			programInfo.program = mutationCache.mutateProgram(topProgram.program, mutation);
+			auto program = mutationCache.mutateProgram(topProgram.program, mutation);
 			
 			if(!topProgram.remainingMutations.size())
 			{
@@ -59,19 +57,16 @@ ProgramInfo TopFactory::createNewProgram()
 				topPrograms.erase(topPrograms.begin() + pos);
 			}
 			
-			if(randomFactory->addProgram(programInfo.program))
-			{
-				// this mutation of this program has not been explored
-				return programInfo;
-			}
+			auto storedProgram = randomFactory->addProgram(program);
+			if(storedProgram) return *storedProgram;
 		}
 	}
 }
 
-void TopFactory::recordProgramScore(const ProgramInfo& programInfo)
+void TopFactory::recordProgramScore(const Program& program, double score)
 {
 	if(topPrograms.size() < maxTopPrograms || 
-		programInfo.score > topPrograms.back().score)
+		score > topPrograms.back().score)
 	{
 		if(topPrograms.size() == maxTopPrograms)
 		{
@@ -80,13 +75,13 @@ void TopFactory::recordProgramScore(const ProgramInfo& programInfo)
 		}
 		
 		TopProgram topProgram;
-		topProgram.score = programInfo.score;
-		topProgram.program = programInfo.program;
+		topProgram.score = score;
+		topProgram.program = program;
 		
 		// xxx: linear search over ordered list!
 		auto it = topPrograms.begin();
 		for(it = topPrograms.begin(); 
-			it != topPrograms.end() && it->score >= programInfo.score;
+			it != topPrograms.end() && it->score >= score;
 			++it);
 		topPrograms.insert(it, topProgram);
 	}

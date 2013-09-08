@@ -32,27 +32,31 @@ const std::unordered_set<Program>& RandomFactory::getPrograms() const
 	return programs;
 }
 
-bool RandomFactory::addProgram(const Program& program)
+const Program* RandomFactory::addProgram(const Program& program)
 {
 	// note: guessing is fine when creating random programs, 
 	// but we must be precise here!
 	auto len = program.size();
-	if(len <= statCount && !stats[len].remaining) return false;
-	auto added = programs.insert(program).second;
-	if(added && len <= statCount) --stats[len].remaining;
-	return added;
+	if(len <= statCount && !stats[len].remaining) return nullptr;
+	
+	auto result = programs.insert(program);
+	if(result.second)
+	{
+		if(len <= statCount) --stats[len].remaining;
+		return &(*result.first);
+	}
+	return nullptr;
 }
 
 // returns a new program
-ProgramInfo RandomFactory::createNewProgram()
+const Program& RandomFactory::createNewProgram()
 {
-	programInfo.program.clear();
+	program.clear();
 	size_t len = 0;
-	auto createdProgram = false;
 	
-	do
+	while(1)
 	{
-		programInfo.program.push_back(random->getInt(instructionCount));
+		program.push_back(random->getInt(instructionCount));
 		++len;
 		
 		auto tryCreateProgram = true;
@@ -79,12 +83,14 @@ ProgramInfo RandomFactory::createNewProgram()
 		
 		if(tryCreateProgram)
 		{
-			// note: second is true if program was created, false if it already exists
-			createdProgram = programs.insert(programInfo.program).second;
-			if(createdProgram && len <= statCount) --stats[len].remaining;
+			// note: result.second is true if program was created, false if it already exists
+			// result.first is an iterator to the program
+			auto result = programs.insert(program);
+			if(result.second)
+			{
+				if(len <= statCount) --stats[len].remaining;
+				return *result.first;
+			}
 		}
 	}
-	while(!createdProgram);
-	
-	return programInfo;
 }

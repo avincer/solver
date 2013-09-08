@@ -1,23 +1,8 @@
 #include "program-factory.h"
+#include "program-hash.h"
 #include "random.h"
 
 #include <unordered_set>
-#include <boost/functional/hash.hpp>
-
-// c++ doesn't provide a hash function for std::vector of anything except bool
-// this declaration adds a specialization of the hash function for Program
-// note: this must be defined before the declaration of unordered_set
-namespace std
-{
-	template <>
-	struct hash<Program>
-	{
-		size_t operator()(const Program& program) const
-		{
-			return boost::hash_range(program.begin(), program.end());
-		}
-	};
-}
 
 typedef struct
 {
@@ -37,7 +22,7 @@ class RandomFactory : public IProgramFactory
 		size_t statCount;
 		
 		std::unordered_set<Program> programs;
-		ProgramInfo programInfo;
+		Program program;
 
 	public:
 		RandomFactory(IRandom* random, unsigned char instructionCount);
@@ -47,12 +32,12 @@ class RandomFactory : public IProgramFactory
 		const std::unordered_set<Program>& getPrograms() const;
 
 		// returns a new (random) program
-		ProgramInfo createNewProgram();
+		const Program& createNewProgram();
 		
-		bool addProgram(const Program& program);
+		const Program* addProgram(const Program& program);
 
 		// no-op for this factory
-		void recordProgramScore(const ProgramInfo& program) {}
+		void recordProgramScore(const Program& program, double score) {}
 
 		// nothing interesting to output
 		void dumpProgramInformation(const Program& program) {}

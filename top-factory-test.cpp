@@ -88,8 +88,8 @@ void testRandomFactory()
 	
 	// must not be able to add the same program twice
 	Program program { 1, 2, 3 };
-	assert(randomFactory.addProgram(program) == true);
-	assert(randomFactory.addProgram(program) == false);
+	assert(randomFactory.addProgram(program).second == true);
+	assert(randomFactory.addProgram(program).second == false);
 	
 	// manually adding programs should update stats
 	assert(randomFactory.stats[1].remaining == 10);

@@ -18,19 +18,22 @@ double Solver::scoreOutput(int outputLen)
 	return score / target.size();
 }
 
-void Solver::updateBestPrograms(ProgramInfo& program, int outputLen)
+void Solver::updateBestPrograms(const Program& program, double score, int outputLen)
 {
 	if(bestPrograms.size() < bestProgramCount || 
-		program.score > bestPrograms.back().score)
+		score > bestPrograms.back().score)
 	{
 		// store the program along with its output
-		program.output = output;
-		program.output.resize(outputLen);
+		ProgramInfo info;
+		info.program = program;
+		info.score = score;
+		info.output = output;
+		info.output.resize(outputLen);
 		
 		if(bestPrograms.size() == 0)
 		{
 			// first program to be stored!
-			bestPrograms.push_back(program);
+			bestPrograms.push_back(info);
 		}
 		else
 		{
@@ -40,9 +43,9 @@ void Solver::updateBestPrograms(ProgramInfo& program, int outputLen)
 			for(auto it = bestPrograms.begin(); 
 				it != bestPrograms.end() && !inserted; ++it)
 			{
-				if(program.score > it->score)
+				if(score > it->score)
 				{
-					bestPrograms.insert(it, program);
+					bestPrograms.insert(it, info);
 					inserted = true;
 				}
 			}
@@ -83,7 +86,7 @@ void Solver::outputStatus()
 	
 	std::cout << std::endl;
 	std::cout << " score | output" << std::endl;
-	for(auto programInfo: bestPrograms)
+	for(const auto& programInfo: bestPrograms)
 	{
 		std::cout << std::setw(6) << std::setprecision(3) << programInfo.score;
 		std::cout << std::setw(0) << " | ";
@@ -124,8 +127,8 @@ void Solver::run(size_t maxPrograms, bool exitOnFirstSolution, double brevityWei
 	while(running)
 	{
 		// create a program and load it into the VM
-		ProgramInfo programInfo = factory->createNewProgram();
-		vm->loadProgram(programInfo.program);
+		auto& program = factory->createNewProgram();
+		vm->loadProgram(program);
 		
 		// run the program and store output
 		bool result = true;
@@ -137,12 +140,12 @@ void Solver::run(size_t maxPrograms, bool exitOnFirstSolution, double brevityWei
 		
 		// score the program and update the program factory stats
 		auto outputScore = scoreOutput(i);
-		auto brevityScore = 1.0 / programInfo.program.size();
-		programInfo.score = (1.0 - brevityWeight) * outputScore + brevityWeight * brevityScore;
-		factory->recordProgramScore(programInfo);
+		auto brevityScore = 1.0 / program.size();
+		auto score = (1.0 - brevityWeight) * outputScore + brevityWeight * brevityScore;
+		factory->recordProgramScore(program, score);
 		
 		// record it if it was any good
-		updateBestPrograms(programInfo, i);
+		updateBestPrograms(program, score, i);
 
 		++programCount;
 

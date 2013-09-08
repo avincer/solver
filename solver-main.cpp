@@ -268,7 +268,7 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 			if(arg == "list")
 			{
 				// list the things we support
-				for(auto thing: list)
+				for(const auto& thing: list)
 				{
 					std::cout << thing.first << " : " << thing.second << std::endl;
 				}
@@ -277,7 +277,7 @@ bool parseOptions(int argc, char** argv, SolverOptions& options)
 			else
 			{
 				// check that the selected thing is valid
-				for(auto thing: list)
+				for(const auto& thing: list)
 				{
 					if(thing.first == arg) return true;
 				}

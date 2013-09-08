@@ -17,22 +17,23 @@ std::string AppendFactory::getName()
 	return "AppendFactory";
 }
 
-ProgramInfo AppendFactory::createNewProgram()
+const Program& AppendFactory::createNewProgram()
 {
 	// note: the intention here is to clear the vector but retain allocated memory
 	// freeing and reallocating is a waste of time
 	currentProgram.clear();
 	
-	ProgramInfo p;
-	p.node = createNewNode(root);
-	p.program = currentProgram;
-	return p;
+	auto node = createNewNode(root);
+	auto result = runningPrograms.emplace(currentProgram, node);
+	return result.first->first; // wtf?!
 }
 
-void AppendFactory::recordProgramScore(const ProgramInfo& program)
+void AppendFactory::recordProgramScore(const Program& program, double score)
 {
-	auto node = (Node*)program.node;
-	node->setScore(program.score);
+	auto it = runningPrograms.find(program);
+	auto node = it->second;
+	node->setScore(score);
+	runningPrograms.erase(it);
 }
 
 void AppendFactory::dumpProgramInformation(const Program& program)
