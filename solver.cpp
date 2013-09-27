@@ -26,7 +26,7 @@ void Solver::updateBestPrograms(ProgramInfo& program, int outputLen)
 	{
 		// store the program along with its output
 		program.output = output;
-		program.output.resize(outputLen);
+        program.output.resize(outputLen);
 		
 		if(bestPrograms.size() == 0)
 		{

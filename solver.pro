@@ -36,4 +36,3 @@ HEADERS += \
     math-stack.h \
     ivm.h \
     append-factory.h
-

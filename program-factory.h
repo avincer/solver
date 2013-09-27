@@ -8,17 +8,13 @@
 
 typedef struct
 {
-	// the program
 	Program program;
 	
-	// score for this program
-	double score;
+    double score; // for this program
 	
-	// output for this program, if recorded
-	std::vector<float> output;
+    std::vector<float> output; // for this program, if recorded
 	
-	// node that represents this program (used by program factory)
-	void* node;
+    void* node; // represents this program (used by program factory)
 }
 ProgramInfo;
 

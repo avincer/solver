@@ -102,7 +102,7 @@ int main(int argc, char** argv)
 	options.pileUpMemorySize = 16;
 	options.pileUpMaxOps = 1000;
 	
-	options.newtableMostRunTimePerOutput = 100;
+    options.newtableMostRunTimePerOutput = 100;
 	
 	if(!parseOptions(argc, argv, options)) return 0;
 	
